@@ -12,12 +12,18 @@ namespace Content.Client.Stylesheets
         public Stylesheet SheetNano { get; private set; } = default!;
         public Stylesheet SheetSpace { get; private set; } = default!;
 
+        // Imperial Medieval Style start
+        public Stylesheet SheetMedieval { get; private set; } = default!;
+        // Imperial Medieval Style end
+
         public void Initialize()
         {
             SheetNano = new StyleNano(_resourceCache).Stylesheet;
             SheetSpace = new StyleSpace(_resourceCache).Stylesheet;
 
-            _userInterfaceManager.Stylesheet = SheetNano;
+            SheetMedieval = new StyleMedieval(_resourceCache).Stylesheet; // Imperial Medieval style
+
+            _userInterfaceManager.Stylesheet = SheetMedieval;
         }
     }
 }
