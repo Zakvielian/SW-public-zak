@@ -15,9 +15,9 @@ public sealed class MenuButton : ContainerButton
     public const string StyleClassLabelTopButton = "topButtonLabel";
     public const string StyleClassRedTopButton = "topButtonLabel";
 
-    private static readonly Color ColorNormal = Color.FromHex("#d4af37"); // Imperial medieval
+    private static readonly Color ColorNormal = Color.FromHex("#B49E97"); // Imperial medieval
     private static readonly Color ColorRedNormal = Color.FromHex("#FEFEFE");
-    private static readonly Color ColorHovered = Color.FromHex("#9a8339"); // Imperial medieval
+    private static readonly Color ColorHovered = Color.FromHex("#a19692"); // Imperial medieval
     private static readonly Color ColorRedHovered = Color.FromHex("#FFFFFF");
     private static readonly Color ColorPressed = Color.FromHex("#e0c87a"); // Imperial medieval
 

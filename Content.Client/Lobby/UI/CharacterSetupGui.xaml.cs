@@ -44,7 +44,7 @@ namespace Content.Client.Lobby.UI
             var back = new StyleBoxTexture
             {
                 Texture = panelTex,
-                Modulate = new Color(94, 80, 80) // Imperial Medieval
+                Modulate = new Color(67, 51, 46) // Imperial Medieval
             };
             back.SetPatchMargin(StyleBox.Margin.All, 10);
 
