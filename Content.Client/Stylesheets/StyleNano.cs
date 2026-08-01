@@ -555,7 +555,7 @@ namespace Content.Client.Stylesheets
             placeholder.SetExpandMargin(StyleBox.Margin.All, -5);
             placeholder.Mode = StyleBoxTexture.StretchMode.Tile;
 
-            var itemListBackgroundSelected = new StyleBoxFlat { BackgroundColor = new Color(22, 15, 50) }; // Imperial Medieval
+            var itemListBackgroundSelected = new StyleBoxFlat { BackgroundColor = new Color(39, 29, 23) }; // Imperial Medieval
             itemListBackgroundSelected.SetContentMarginOverride(StyleBox.Margin.Vertical, 2);
             itemListBackgroundSelected.SetContentMarginOverride(StyleBox.Margin.Horizontal, 4);
             var itemListItemBackgroundDisabled = new StyleBoxFlat { BackgroundColor = new Color(22, 43, 15) }; // Imperial Medieval
@@ -1190,7 +1190,7 @@ namespace Content.Client.Stylesheets
                 new StyleRule(new SelectorElement(typeof(ItemList), null, null, null), new[]
                 {
                     new StyleProperty(ItemList.StylePropertyBackground,
-                        new StyleBoxFlat {BackgroundColor = new Color(23, 35, 17)}),
+                        new StyleBoxFlat {BackgroundColor = new Color(30, 22, 17)}),
                     new StyleProperty(ItemList.StylePropertyItemBackground,
                         itemListItemBackground),
                     new StyleProperty(ItemList.StylePropertyDisabledItemBackground,
@@ -1227,7 +1227,7 @@ namespace Content.Client.Stylesheets
                 new StyleRule(new SelectorElement(typeof(Tree), null, null, null), new[]
                 {
                     new StyleProperty(Tree.StylePropertyBackground,
-                        new StyleBoxFlat {BackgroundColor = new Color(23, 35, 17)}),
+                        new StyleBoxFlat {BackgroundColor = new Color(30, 22, 17)}),
                     new StyleProperty(Tree.StylePropertyItemBoxSelected, new StyleBoxFlat
                     {
                         BackgroundColor = new Color(94, 76, 65), //Imperial Medieval

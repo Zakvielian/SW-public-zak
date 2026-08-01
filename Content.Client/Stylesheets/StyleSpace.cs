@@ -64,9 +64,9 @@ namespace Content.Client.Stylesheets
             var tabContainerPanel = new StyleBoxTexture();
             tabContainerPanel.SetPatchMargin(StyleBox.Margin.All, 2);
 
-            var tabContainerBoxActive = new StyleBoxFlat { BackgroundColor = new Color(22, 52, 26) };
+            var tabContainerBoxActive = new StyleBoxFlat { BackgroundColor = new Color(174, 134, 92) };
             tabContainerBoxActive.SetContentMarginOverride(StyleBox.Margin.Horizontal, 5);
-            var tabContainerBoxInactive = new StyleBoxFlat { BackgroundColor = new Color(23, 35, 17) };
+            var tabContainerBoxInactive = new StyleBoxFlat { BackgroundColor = new Color(30, 22, 17) };
             tabContainerBoxInactive.SetContentMarginOverride(StyleBox.Margin.Horizontal, 5);
 
             Stylesheet = new Stylesheet(BaseRules.Concat(new StyleRule[]
