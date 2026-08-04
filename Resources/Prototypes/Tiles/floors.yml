@@ -1754,31 +1754,39 @@
 # Faux sci tiles
 
 # Grass
+
 - type: tile
   id: FloorAstroGrass
-  parent: BaseStationTile
-  name: tiles-astro-grass
-  sprite: /Textures/Tiles/Planet/Grass/grass.png
-  variants: 4
+  editorHidden: false
+  name: трава (переход)
+  sprite: /Textures/Imperial/Medieval/Tiles/Planet/GrassCP/grass.png
+  variants: 6
   placementVariants:
   - 1.0
   - 1.0
   - 1.0
   - 1.0
-  edgeSpritePriority: 1
+  - 1.0
+  - 1.0
+  edgeSpritePriority: 3
   edgeSprites:
-    SouthEast: /Textures/Tiles/Planet/Grass/single_edge.png
-    NorthEast: /Textures/Tiles/Planet/Grass/single_edge.png
-    NorthWest: /Textures/Tiles/Planet/Grass/single_edge.png
-    SouthWest: /Textures/Tiles/Planet/Grass/single_edge.png
-    South: /Textures/Tiles/Planet/Grass/double_edge.png
-    East: /Textures/Tiles/Planet/Grass/double_edge.png
-    North: /Textures/Tiles/Planet/Grass/double_edge.png
-    West: /Textures/Tiles/Planet/Grass/double_edge.png
-  deconstructTools: [ Cutting ]
+    SouthEast: /Textures/Imperial/Medieval/Tiles/Planet/GrassCP/single_edge_SE.png
+    NorthEast: /Textures/Imperial/Medieval/Tiles/Planet/GrassCP/single_edge_NE.png
+    NorthWest: /Textures/Imperial/Medieval/Tiles/Planet/GrassCP/single_edge_NW.png
+    SouthWest: /Textures/Imperial/Medieval/Tiles/Planet/GrassCP/single_edge_SW.png
+    South: /Textures/Imperial/Medieval/Tiles/Planet/GrassCP/double_edge_S.png
+    East: /Textures/Imperial/Medieval/Tiles/Planet/GrassCP/double_edge_E.png
+    North: /Textures/Imperial/Medieval/Tiles/Planet/GrassCP/double_edge_N.png
+    West: /Textures/Imperial/Medieval/Tiles/Planet/GrassCP/double_edge_W.png
+  #baseTurf: CP14FloorDirt
+  #deconstructTools: [ CP14Digging ]
+  #itemDrop: CP14DirtEffect
+  isSubfloor: false
   footstepSounds:
     collection: FootstepGrass
-  itemDrop: FloorTileItemAstroGrass
+  heatCapacity: 99910000
+  weather: true
+  badSmellMod: 1.25
 
 - type: tile
   id: FloorMowedAstroGrass
