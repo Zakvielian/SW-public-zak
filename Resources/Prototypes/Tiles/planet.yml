@@ -8,17 +8,50 @@
   weather: true
   indestructible: true
 
+
 - type: tile
+  editorHidden: false
   id: FloorPlanetDirt
-  parent: BaseFloorPlanet
-  name: tiles-dirt-planet-floor
-  sprite: /Textures/Tiles/Planet/dirt.rsi/dirt.png
-  variants: 4
+  name: tiles-dirt-floor
+  sprite: /Textures/Imperial/Medieval/Tiles/Planet/DirtCP/cavedrought.png
+  variants: 16
   placementVariants:
   - 1.0
   - 1.0
   - 1.0
   - 1.0
+  - 1.0
+  - 1.0
+  - 1.0
+  - 1.0
+  - 1.0
+  - 1.0
+  - 1.0
+  - 1.0
+  - 1.0
+  - 1.0
+  - 1.0
+  - 1.0
+  edgeSpritePriority: 2
+  edgeSprites:
+    SouthEast: /Textures/Imperial/Medieval/Tiles/Planet/DirtCP/single_edge_SE.png
+    NorthEast: /Textures/Imperial/Medieval/Tiles/Planet/DirtCP/single_edge_NE.png
+    NorthWest: /Textures/Imperial/Medieval/Tiles/Planet/DirtCP/single_edge_NW.png
+    SouthWest: /Textures/Imperial/Medieval/Tiles/Planet/DirtCP/single_edge_SW.png
+    South: /Textures/Imperial/Medieval/Tiles/Planet/DirtCP/double_edge_S.png
+    East: /Textures/Imperial/Medieval/Tiles/Planet/DirtCP/double_edge_E.png
+    North: /Textures/Imperial/Medieval/Tiles/Planet/DirtCP/double_edge_N.png
+    West: /Textures/Imperial/Medieval/Tiles/Planet/DirtCP/double_edge_W.png
+  #baseTurf: CP14FloorBase
+  #deconstructTools: [ CP14Digging ]
+  #itemDrop: CP14RandomDirtLootSpawner
+  isSubfloor: true
+  footstepSounds:
+    collection: FootstepAsteroid
+  heatCapacity: 999100000
+  weather: true
+  badSmellMod: 2
+
 
 # Desert
 - type: tile

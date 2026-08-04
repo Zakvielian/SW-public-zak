@@ -102,9 +102,9 @@
       soundHit:
         path: /Audio/Weapons/Xeno/alien_claw_flesh3.ogg
       damage:
-        groups:
-          Brute: 48
         types:
+          Blunt: 40
+          Slash: 8
           Structural: 600
       range: 2.5
       attackRate: 0.5

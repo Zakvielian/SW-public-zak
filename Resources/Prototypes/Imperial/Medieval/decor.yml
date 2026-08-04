@@ -1319,13 +1319,17 @@
     state: bed
   - type: HealOnBuckle
     damage:
-      groups:
-        Brute: -0.1
-        Burn: -0.1
-        Airloss: -0.3
       types:
+        Blunt: -0.03
+        Slash: -0.03
+        Piercing: -0.03
+        Heat: -0.03
+        Shock: -0.03
+        Cold: -0.03
+        Caustic: -0.04
+        Asphyxiation: -0.2
+        Bloodloss: -0.03
         Poison: -0.04
-        Caustic: -0.02
         Radiation: -0.04
   - type: MedievalPlagueHealStrapped
 
@@ -1350,11 +1354,15 @@
     state: bed2
   - type: HealOnBuckle
     damage:
-      groups:
-        Brute: -0.52
-        Burn: -0.56
-        Airloss: -0.5
       types:
+        Blunt: -0.16
+        Slash: -0.16
+        Piercing: -0.16
+        Heat: -0.16
+        Shock: -0.16
+        Cold: -0.16
+        Asphyxiation: -0.25
+        Bloodloss: -0.25
         Poison: -0.36
         Caustic: -0.1
         Radiation: -0.16

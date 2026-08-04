@@ -2344,8 +2344,10 @@
       plagueProgressionDecayPerUse: 1
       damageContainers: [Biological, Forged]
       damage:
-        groups:
-          Brute: -15 # 5 for each type in the group
+        types:
+          Blunt: -5
+          Slash: -5
+          Piercing: -5
       healingBeginSound:
         path: "/Audio/Items/Medical/brutepack_begin.ogg"
       healingEndSound:
@@ -6875,9 +6877,10 @@
     damageContainers:
       - Shield
     damage:
-      groups:
-        Brute: -1000
       types:
+        Blunt: -1000
+        Slash: -1000
+        Piercing: -1000
         Heat: -1000
         Structural: -1000
     delay: 3
