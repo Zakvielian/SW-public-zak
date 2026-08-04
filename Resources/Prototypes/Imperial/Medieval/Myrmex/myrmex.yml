@@ -593,9 +593,8 @@
     soundHit:
       collection: MyrmexAttack
     damage:
-      groups:
-        Brute: 8
       types:
+        Blunt: 8
         ParryAble: 1
         Structural: 85
   - type: MobThresholds
@@ -660,10 +659,9 @@
     soundHit:
       collection: MyrmexAttack
     damage:
-      groups:
-        Brute: 5
-        Airloss: 2
       types:
+        Blunt: 5
+        Asphyxiation: 2
         ParryAble: 1
   - type: Gun
     fireRate: 0.75
@@ -730,10 +728,9 @@
     soundHit:
       collection: MyrmexAttack
     damage:
-      groups:
-        Brute: 14
-        Airloss: 3
       types:
+        Blunt: 14
+        Asphyxiation: 3
         ParryAble: 1
         Bloodloss: 4
   - type: MobThresholds
@@ -794,12 +791,10 @@
     soundHit:
       collection: MyrmexAttack
     damage:
-      groups:
-        Brute: 10
-        Airloss: 2
       types:
+        Blunt: 10
         ParryAble: 1
-        Bloodloss: 2
+        Bloodloss: 4
   - type: MobThresholds
     thresholds:
       0: Alive
@@ -946,12 +941,10 @@
     soundHit:
       collection: MyrmexAttack
     damage:
-      groups:
-        Brute: 20
-        Airloss: 3
       types:
+        Blunt: 20
         ParryAble: 1
-        Bloodloss: 5
+        Bloodloss: 6
         Structural: 155
   - type: MobThresholds
     thresholds:
