@@ -1587,7 +1587,7 @@
 - type: tile
   id: FloorCave
   name: tiles-cave
-  sprite: /Textures/Tiles/cave.png
+  sprite: /Textures/Imperial/Medieval/Tiles/Planet/Cave/cave.png
   variants: 7
   placementVariants:
   - 1.0
@@ -1597,11 +1597,23 @@
   - 1.0
   - 1.0
   - 1.0
+  edgeSpritePriority: 4
+  edgeSprites:
+    SouthEast: /Textures/Imperial/Medieval/Tiles/Planet/Cave/single-stoneedge-A.png
+    NorthEast: /Textures/Imperial/Medieval/Tiles/Planet/Cave/single-stoneedge-B.png
+    NorthWest: /Textures/Imperial/Medieval/Tiles/Planet/Cave/single-stoneedge-C.png
+    SouthWest: /Textures/Imperial/Medieval/Tiles/Planet/Cave/single-stoneedge-D.png
+    South: /Textures/Imperial/Medieval/Tiles/Planet/Cave/double-stoneedge-A.png
+    East: /Textures/Imperial/Medieval/Tiles/Planet/Cave/double-stoneedge-B.png
+    North: /Textures/Imperial/Medieval/Tiles/Planet/Cave/double-stoneedge-C.png
+    West: /Textures/Imperial/Medieval/Tiles/Planet/Cave/double-stoneedge-D.png
   baseTurf: Space
   isSubfloor: true
+  weather: true
   footstepSounds:
     collection: FootstepAsteroid
-  heatCapacity: 10000
+  heatCapacity: 99910000
+  badSmellMod: 1.5
 
 - type: tile
   id: FloorCaveDrought
@@ -1621,7 +1633,9 @@
   isSubfloor: true
   footstepSounds:
     collection: FootstepAsteroid
-  heatCapacity: 10000
+  heatCapacity: 99910000
+  badSmellMod: 1.5 # imperial medieval badsmell
+  weather: true
 
 - type: tile
   id: FloorFlesh
