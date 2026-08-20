@@ -1,0 +1,24 @@
+- type: calendarEvent
+  id: DefaultCalendarEvent
+  texture: "/Textures/Imperial/Medieval/Calendar/indicators.rsi/sun.png"
+  text: calendar-broadcast-default-text
+  sound:
+    path: "/Audio/Effects/church_bell1.ogg"
+
+- type: calendarEvent
+  id: DefaultCalendarEventDay1
+  texture: "/Textures/Imperial/Medieval/Calendar/indicators.rsi/sun.png"
+  text: calendar-broadcast-default-day1
+  sound:
+    path: "/Audio/Effects/church_bell1.ogg"
+  tags:
+    - RandomDay
+
+- type: calendarEvent
+  id: DefaultCalendarEventDay2
+  texture: "/Textures/Imperial/Medieval/Calendar/indicators.rsi/sun.png"
+  text: calendar-broadcast-default-day2
+  sound:
+    path: "/Audio/Effects/church_bell1.ogg"
+  tags:
+    - RandomDay
