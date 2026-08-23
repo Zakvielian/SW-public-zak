@@ -26,7 +26,7 @@ public sealed class CalendarNotificationUiController : UIController
         if (!_prototype.TryIndex(ev.ProtoId, out CalendarEventPrototype? proto))
             return;
 
-        var text = !string.IsNullOrEmpty(proto.Text) ? Loc.GetString("wrapped-area-marker-message", ("area", Loc.GetString(proto.Text)), ("fontSize", 24)) : string.Empty;
+        var text = !string.IsNullOrEmpty(proto.Name) ? Loc.GetString("wrapped-area-marker-message", ("area", Loc.GetString(proto.Name)), ("fontSize", 24)) : string.Empty;
 
         var even = new AreaMarkerAnnounceEvent(text);
         _entManager.EventBus.RaiseEvent(EventSource.Local, ref even);

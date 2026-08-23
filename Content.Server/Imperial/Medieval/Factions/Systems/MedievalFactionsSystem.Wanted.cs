@@ -1,6 +1,6 @@
 using System.Linq;
 using Content.Shared.DetailExaminable;
-using Content.Server.MedievalPasport.Components;
+using Content.Server.Imperial.Medieval.Calendar.Board;
 using Content.Shared.Imperial.Medieval.Factions;
 using Content.Shared.Imperial.Medieval.Factions.Components;
 using Content.Shared.Imperial.Medieval.Factions.Prototypes;
@@ -9,7 +9,6 @@ using Content.Shared.Humanoid;
 using Content.Shared.Humanoid.Markings;
 using Content.Shared.Preferences;
 using Content.Shared.Salvage.Expeditions;
-using Content.Shared.Imperial.Medieval.Calendar; // Пространство имен для CalendarBoard
 using Robust.Server.GameObjects;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Utility;
@@ -19,26 +18,18 @@ namespace Content.Server.Imperial.Medieval.Factions;
 public sealed partial class MedievalFactionsSystem
 {
     [Dependency] private readonly UserInterfaceSystem _ui = default!;
-    [Dependency] private readonly AppearanceSystem _appearance = default!;
+    [Dependency] private readonly CalendarBoardSystem _calendarBoard = default!;
 
     public readonly Dictionary<int, WantedData> WantedList = new();
 
     private void InitializeWanted()
     {
         SubscribeLocalEvent<RoundRestartCleanupEvent>(OnRestartCleanup);
-
-        // Заменено на подписку для CalendarBoardComponent
-        SubscribeLocalEvent<CalendarBoardComponent, MapInitEvent>(OnBoardInit);
     }
 
     private void OnRestartCleanup(RoundRestartCleanupEvent args)
     {
         WantedList.Clear();
-    }
-
-    private void OnBoardInit(EntityUid uid, CalendarBoardComponent comp, MapInitEvent args)
-    {
-        UpdateUi(uid);
     }
 
     public void AddWanted(EntityUid uid, string job, string performer, string details, ProtoId<MedievalFactionPrototype> proto)
@@ -63,7 +54,8 @@ public sealed partial class MedievalFactionsSystem
 
         var wanted = new WantedData(profile, job, proto, performer, flavorText, details);
         WantedList.Add(friends.MemberID, wanted);
-        UpdateUi();
+
+        _calendarBoard.UpdateAllBoards();
 
         _action.RemoveAction(uid, friends.FactionMenuActionEntity);
         _ui.CloseUis(uid);
@@ -126,29 +118,7 @@ public sealed partial class MedievalFactionsSystem
             return;
 
         WantedList.Remove(friends.MemberID);
-        UpdateUi();
-    }
 
-    public void UpdateUi()
-    {
-        // Заменено состояние
-        var state = new CalendarBoardBoundUserInterfaceState(WantedList);
-
-        // Запрошен CalendarBoardComponent вместо WantedDeskComponent
-        var query = EntityQueryEnumerator<CalendarBoardComponent>();
-        while (query.MoveNext(out var uid, out _))
-        {
-            // Обновлен ключ интерфейса
-            _ui.SetUiState(uid, CalendarBoardUiKey.Key, state);
-            _appearance.SetData(uid, WantedDeskVisuals.Appearance, WantedList.Count switch { <= 0 => WantedDeskVisualState.None, < 3 => WantedDeskVisualState.Min, < 6 => WantedDeskVisualState.Medium, > 6 => WantedDeskVisualState.Full, _ => WantedDeskVisualState.None });
-        }
-    }
-
-    public void UpdateUi(EntityUid uid)
-    {
-        // Заменено состояние и ключ интерфейса
-        var state = new CalendarBoardBoundUserInterfaceState(WantedList);
-        _ui.SetUiState(uid, CalendarBoardUiKey.Key, state);
-        _appearance.SetData(uid, WantedDeskVisuals.Appearance, WantedList.Count switch { <= 0 => WantedDeskVisualState.None, < 3 => WantedDeskVisualState.Min, < 6 => WantedDeskVisualState.Medium, > 6 => WantedDeskVisualState.Full, _ => WantedDeskVisualState.None });
+        _calendarBoard.UpdateAllBoards();
     }
 }

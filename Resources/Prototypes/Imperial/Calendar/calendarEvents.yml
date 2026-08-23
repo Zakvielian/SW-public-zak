@@ -8,7 +8,8 @@
 - type: calendarEvent
   id: DefaultCalendarEventDay1
   texture: "/Textures/Imperial/Medieval/Calendar/indicators.rsi/sun.png"
-  text: calendar-broadcast-default-day1
+  name: calendar-event-default-day1-name
+  text: calendar-event-default-day1-desc
   sound:
     path: "/Audio/Effects/church_bell1.ogg"
   tags:
@@ -17,7 +18,58 @@
 - type: calendarEvent
   id: DefaultCalendarEventDay2
   texture: "/Textures/Imperial/Medieval/Calendar/indicators.rsi/sun.png"
-  text: calendar-broadcast-default-day2
+  name: calendar-event-default-day2-name
+  text: calendar-event-default-day2-desc
+  sound:
+    path: "/Audio/Effects/church_bell1.ogg"
+  tags:
+    - RandomDay
+
+- type: calendarEvent
+  id: DefaultCalendarEventDay3
+  texture: "/Textures/Imperial/Medieval/Calendar/indicators.rsi/sun.png"
+  name: calendar-event-default-day3-name
+  text: calendar-event-default-day3-desc
+  sound:
+    path: "/Audio/Effects/church_bell1.ogg"
+  tags:
+    - RandomDay
+
+- type: calendarEvent
+  id: DefaultCalendarEventDay4
+  texture: "/Textures/Imperial/Medieval/Calendar/indicators.rsi/sun.png"
+  name: calendar-event-default-day4-name
+  text: calendar-event-default-day4-desc
+  sound:
+    path: "/Audio/Effects/church_bell1.ogg"
+  tags:
+    - RandomDay
+
+- type: calendarEvent
+  id: DefaultCalendarEventDay5
+  texture: "/Textures/Imperial/Medieval/Calendar/indicators.rsi/sun.png"
+  name: calendar-event-default-day5-name
+  text: calendar-event-default-day5-desc
+  sound:
+    path: "/Audio/Effects/church_bell1.ogg"
+  tags:
+    - RandomDay
+
+- type: calendarEvent
+  id: DefaultCalendarEventDay6
+  texture: "/Textures/Imperial/Medieval/Calendar/indicators.rsi/sun.png"
+  name: calendar-event-default-day6-name
+  text: calendar-event-default-day6-desc
+  sound:
+    path: "/Audio/Effects/church_bell1.ogg"
+  tags:
+    - RandomDay
+
+- type: calendarEvent
+  id: DefaultCalendarEventDay7
+  texture: "/Textures/Imperial/Medieval/Calendar/indicators.rsi/sun.png"
+  name: calendar-event-default-day7-name
+  text: calendar-event-default-day7-desc
   sound:
     path: "/Audio/Effects/church_bell1.ogg"
   tags:

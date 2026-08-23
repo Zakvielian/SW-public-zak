@@ -12,6 +12,9 @@ public sealed partial class CalendarEventPrototype : IPrototype
     [DataField("texture")]
     public string Texture { get; set; } = string.Empty;
 
+    [DataField("name")]
+    public string Name { get; set; } = string.Empty;
+
     [DataField("text")]
     public string Text { get; set; } = string.Empty;
 
