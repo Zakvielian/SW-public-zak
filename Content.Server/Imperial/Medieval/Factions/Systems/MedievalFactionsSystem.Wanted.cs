@@ -9,6 +9,7 @@ using Content.Shared.Humanoid;
 using Content.Shared.Humanoid.Markings;
 using Content.Shared.Preferences;
 using Content.Shared.Salvage.Expeditions;
+using Content.Shared.Imperial.Medieval.Calendar; // Пространство имен для CalendarBoard
 using Robust.Server.GameObjects;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Utility;
@@ -26,7 +27,8 @@ public sealed partial class MedievalFactionsSystem
     {
         SubscribeLocalEvent<RoundRestartCleanupEvent>(OnRestartCleanup);
 
-        SubscribeLocalEvent<WantedDeskComponent, MapInitEvent>(OnDeskInit);
+        // Заменено на подписку для CalendarBoardComponent
+        SubscribeLocalEvent<CalendarBoardComponent, MapInitEvent>(OnBoardInit);
     }
 
     private void OnRestartCleanup(RoundRestartCleanupEvent args)
@@ -34,7 +36,7 @@ public sealed partial class MedievalFactionsSystem
         WantedList.Clear();
     }
 
-    private void OnDeskInit(EntityUid uid, WantedDeskComponent comp, MapInitEvent args)
+    private void OnBoardInit(EntityUid uid, CalendarBoardComponent comp, MapInitEvent args)
     {
         UpdateUi(uid);
     }
@@ -129,19 +131,24 @@ public sealed partial class MedievalFactionsSystem
 
     public void UpdateUi()
     {
-        var state = new WantedDeskBoundUserInterfaceState(WantedList);
-        var query = EntityQueryEnumerator<WantedDeskComponent>();
+        // Заменено состояние
+        var state = new CalendarBoardBoundUserInterfaceState(WantedList);
+
+        // Запрошен CalendarBoardComponent вместо WantedDeskComponent
+        var query = EntityQueryEnumerator<CalendarBoardComponent>();
         while (query.MoveNext(out var uid, out _))
         {
-            _ui.SetUiState(uid, WantedDeskUiKey.Key, state);
+            // Обновлен ключ интерфейса
+            _ui.SetUiState(uid, CalendarBoardUiKey.Key, state);
             _appearance.SetData(uid, WantedDeskVisuals.Appearance, WantedList.Count switch { <= 0 => WantedDeskVisualState.None, < 3 => WantedDeskVisualState.Min, < 6 => WantedDeskVisualState.Medium, > 6 => WantedDeskVisualState.Full, _ => WantedDeskVisualState.None });
         }
     }
 
     public void UpdateUi(EntityUid uid)
     {
-        var state = new WantedDeskBoundUserInterfaceState(WantedList);
-        _ui.SetUiState(uid, WantedDeskUiKey.Key, state);
+        // Заменено состояние и ключ интерфейса
+        var state = new CalendarBoardBoundUserInterfaceState(WantedList);
+        _ui.SetUiState(uid, CalendarBoardUiKey.Key, state);
         _appearance.SetData(uid, WantedDeskVisuals.Appearance, WantedList.Count switch { <= 0 => WantedDeskVisualState.None, < 3 => WantedDeskVisualState.Min, < 6 => WantedDeskVisualState.Medium, > 6 => WantedDeskVisualState.Full, _ => WantedDeskVisualState.None });
     }
 }

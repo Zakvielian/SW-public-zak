@@ -9,7 +9,7 @@ using Robust.Shared.Random;
 
 namespace Content.Shared.Imperial.Medieval.Calendar;
 
-public sealed class DaySystem : EntitySystem
+public sealed class CalendarSystem : EntitySystem
 {
     [Dependency] private readonly IPrototypeManager _prototype = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
@@ -19,6 +19,9 @@ public sealed class DaySystem : EntitySystem
     private readonly List<ProtoId<CalendarEventPrototype>> _calendarDeck = new();
 
     public const int TargetDaysCount = 30;
+
+    public IReadOnlyList<ProtoId<CalendarEventPrototype>> CalendarDeck => _calendarDeck;
+    public int CurrentCycle => _curCycle;
 
     public override void Initialize()
     {
@@ -93,7 +96,7 @@ public sealed class TriggerDayNotificationCommand : IConsoleCommand
     public void Execute(IConsoleShell shell, string argStr, string[] args)
     {
         var entSys = IoCManager.Resolve<IEntitySystemManager>();
-        var daySystem = entSys.GetEntitySystem<DaySystem>();
+        var daySystem = entSys.GetEntitySystem<CalendarSystem>();
 
         if (args.Length == 0)
         {
@@ -119,7 +122,7 @@ public sealed class TriggerNextDayCycleCommand : IConsoleCommand
     public void Execute(IConsoleShell shell, string argStr, string[] args)
     {
         var entSys = IoCManager.Resolve<IEntitySystemManager>();
-        var daySystem = entSys.GetEntitySystem<DaySystem>();
+        var daySystem = entSys.GetEntitySystem<CalendarSystem>();
 
         daySystem.TriggerNextDayNotification();
         shell.WriteLine("Triggered next day notification.");
