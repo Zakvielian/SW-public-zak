@@ -17,14 +17,17 @@ public sealed class CalendarBoardBoundUserInterfaceState : BoundUserInterfaceSta
     public Dictionary<int, WantedData> Wanted;
     public List<string> CalendarDeck;
     public int CurrentCycle;
+    public List<AnnouncementData> Announcements;
 
     public CalendarBoardBoundUserInterfaceState(
         Dictionary<int, WantedData> wanted,
         List<string> calendarDeck,
-        int currentCycle)
+        int currentCycle,
+        List<AnnouncementData> announcements)
     {
         Wanted = wanted;
         CalendarDeck = calendarDeck;
         CurrentCycle = currentCycle;
+        Announcements = announcements;
     }
 }

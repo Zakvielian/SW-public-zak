@@ -19,6 +19,17 @@ public sealed class CalendarBoardBoundUserInterface : BoundUserInterface
         _window = new CalendarBoardWindow();
         _window.Owner = Owner;
         _window.OnClose += Close;
+
+        _window.OnCreateAnnouncement += (title, desc, author) =>
+        {
+            SendMessage(new CalendarBoardCreateAnnouncementMessage(title, desc, author));
+        };
+
+        _window.OnDeleteAnnouncement += id =>
+        {
+            SendMessage(new CalendarBoardDeleteAnnouncementMessage(id));
+        };
+
         _window.OpenCentered();
 
         if (State is CalendarBoardBoundUserInterfaceState boardState)
@@ -41,6 +52,6 @@ public sealed class CalendarBoardBoundUserInterface : BoundUserInterface
         if (!disposing)
             return;
 
-        _window?.Dispose();
+        _window?.Close();
     }
 }

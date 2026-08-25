@@ -17,7 +17,7 @@
         </BoxContainer>
 
         <BoxContainer Name="AnnouncementsTab" Orientation="Vertical" HorizontalExpand="True" VerticalExpand="True" Margin="5">
-            <ScrollContainer HorizontalExpand="True" VerticalExpand="True">
+            <ScrollContainer HorizontalExpand="True" VerticalExpand="True" HScrollEnabled="False">
                 <BoxContainer Name="AnnouncementsList" Orientation="Vertical" HorizontalExpand="True" />
             </ScrollContainer>
 
