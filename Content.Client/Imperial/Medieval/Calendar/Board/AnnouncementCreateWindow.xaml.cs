@@ -13,7 +13,7 @@ namespace Content.Client.Imperial.Medieval.Calendar.Board;
 public sealed partial class AnnouncementCreateWindow : DefaultWindow
 {
     public Action<string, string, string>? OnSubmit;
-    private const int MaxDescLength = 128;
+    private const int MaxDescLength = 256;
 
     public AnnouncementCreateWindow()
     {
