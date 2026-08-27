@@ -107,7 +107,8 @@ public sealed class CalendarBoardSystem : EntitySystem
             stringDeck.Add((string) protoId);
         }
 
-        var wantedData = _factions.WantedList;
+        // Поверхностная копия словаря для корректного обновления BUI состояния
+        var wantedData = new Dictionary<int, WantedData>(_factions.WantedList);
 
         var state = new CalendarBoardBoundUserInterfaceState(wantedData, stringDeck, currentCycle, Announcements);
         _ui.SetUiState(uid, CalendarBoardUiKey.Key, state);
