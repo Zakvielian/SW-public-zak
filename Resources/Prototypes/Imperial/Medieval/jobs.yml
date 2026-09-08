@@ -135,6 +135,12 @@
   - TravellerGold2
   - TravellerGold3
   - TravellerGold4
+  - TravellerVillage1
+  - TravellerVillage2
+  - TravellerVillage3
+  - TravellerVillage4
+  - TravellerVillage5
+  - TravellerVillage6
 
 - type: loadout
   id: TravellerDefault
@@ -480,6 +486,54 @@
   equipment:
     jumpsuit: MedievalClothingUniformJumpsuitShitCloth59
 
+- type: loadout
+  id: TravellerVillage1
+  effects:
+  - !type:GroupLoadoutEffect
+    proto: TravellerTimer10hours
+  equipment:
+    jumpsuit: MedievalClothingUniformJumpsuitShitCloth92
+
+- type: loadout
+  id: TravellerVillage2
+  effects:
+  - !type:GroupLoadoutEffect
+    proto: TravellerTimer10hours
+  equipment:
+    jumpsuit: MedievalClothingUniformJumpsuitShitCloth93
+
+- type: loadout
+  id: TravellerVillage3
+  effects:
+  - !type:GroupLoadoutEffect
+    proto: TravellerTimer10hours
+  equipment:
+    jumpsuit: MedievalClothingUniformJumpsuitShitCloth94
+
+- type: loadout
+  id: TravellerVillage4
+  effects:
+  - !type:GroupLoadoutEffect
+    proto: TravellerTimer10hours
+  equipment:
+    jumpsuit: MedievalClothingUniformJumpsuitShitCloth95
+
+- type: loadout
+  id: TravellerVillage5
+  effects:
+  - !type:GroupLoadoutEffect
+    proto: TravellerTimer10hours
+  equipment:
+    jumpsuit: MedievalClothingUniformJumpsuitShitCloth96
+
+- type: loadout
+  id: TravellerVillage6
+  effects:
+  - !type:GroupLoadoutEffect
+    proto: TravellerTimer10hours
+  equipment:
+    jumpsuit: MedievalClothingUniformJumpsuitShitCloth97
+
 - type: loadoutGroup
   id: MedievalNeck
   name: loadout-group-medieval-neck
@@ -704,6 +758,7 @@
   - MedievalMaskFace
   - MedievalPaper
   - MedievalFlinter
+  - FoodBreadMeat
 
 - type: loadoutGroup
   id: MedievalTrinkets3
@@ -723,6 +778,8 @@
   - Gauze
   - MedievalMaskFace
   - MedievalPaper
+  - MedievalFlinter
+  - FoodBreadMeat
 
 - type: loadout
   id: MedievalRevent25
@@ -984,6 +1041,7 @@
     components:
     - type: WarningOnAttach
       message: medieval-warning-base
+    - type: MedievalTraveller
     - type: MedievalJobSpawn
       spawnType: Default
     - type: GiveItemObjective
@@ -1091,6 +1149,7 @@
       message: medieval-warning-base
     - type: MedievalJobSpawn
       spawnType: Default
+    - type: MedievalTraveller
     - type: GiveItemObjective
     - type: MoneyCollector
       objectivePrototype: MedievalGetMoneyObjective400800
@@ -1146,6 +1205,7 @@
       message: medieval-warning-base
     - type: MedievalJobSpawn
       spawnType: Default
+    - type: MedievalTraveller
     - type: GiveItemObjective
     - type: MoneyCollector
       objectivePrototype: MedievalGetMoneyObjective300500
@@ -1701,6 +1761,10 @@
     - type: MoneyCollector
       objectivePrototype: MedievalGetMoneyObjective300500
     - type: Farmer
+    - type: MedievalPasportPerson
+      personJob: "[color=cyan]Владелец таверны[/color]"
+      pasport: MedievalPasportLegion
+      #jobPrefix: "[Тав]"
 
 - type: roleLoadout
   id: JobMedievalInnkeeper
@@ -1762,6 +1826,122 @@
     proto: InnkeeperTimer4hours
   equipment:
     outerClothing: MedievalClothingHeadCloth
+
+# MEDIEVAL TAVERN ASSISTANT
+
+- type: startingGear
+  id: MedievalInnkeeperAssistantGear
+  equipment:
+    pocket1: MedievalRevent25
+    jumpsuit: MedievalClothingUniformJumpsuitShitCloth12
+    id: MedievalKeyTavern
+
+- type: playTimeTracker
+  id: JobMedievalInnkeeperAssistant
+
+- type: jobIcon
+  parent: JobIcon
+  id: JobIconMedievalInnkeeperAssistant
+  icon:
+    sprite: /Textures/Imperial/Medieval/Misc/job_icons.rsi
+    state: innkeeper
+  jobName: job-name-innkeeper-assistant
+
+- type: job
+  id: MedievalInnkeeperAssistant
+  name: job-name-innkeeper-assistant
+  description: job-description-innkeeper-assistant
+  playTimeTracker: JobMedievalInnkeeperAssistant
+  startingGear: MedievalInnkeeperAssistantGear
+  icon: "JobIconMedievalInnkeeperAssistant"
+  special:
+  - !type:AddComponentSpecial
+    components:
+    - type: WarningOnAttach
+      message: medieval-warning-base
+    - type: MedievalJobSpawn
+      spawnType: LegionTrader
+    - type: GiveItemObjective
+    - type: MoneyCollector
+      objectivePrototype: MedievalGetMoneyObjective300500
+    - type: Farmer
+    - type: MedievalPasportPerson
+      personJob: "[color=cyan]Персонал таверны[/color]"
+      pasport: MedievalPasportLegion
+      #jobPrefix: "[Тав]"
+
+
+- type: roleLoadout
+  id: JobMedievalInnkeeperAssistant
+  groups:
+  - InnkeeperHead
+  - MedievalBackpack
+  - MedievalShoes
+  - MedievalBelt
+  - InnkeeperFartuk
+  - MedievalTrinkets
+  - MedievalGloves
+
+# MEDIEVAL INNKEEPER GUARD
+
+- type: startingGear
+  id: MedievalInnkeeperGuardGear
+  equipment:
+    pocket1: MedievalRevent25
+    pocket2: MedievalHandcuffs
+    jumpsuit: MedievalClothingUniformJumpsuitShitCloth11
+    head: MedievalClothingHeadHelmetNormandFree
+    outerClothing: MedievalClothingOuterArmorGambeson
+    #neck: MedievalClothingNeckCloakViking
+    id: MedievalKeyTavern
+  inhand:
+  - MedievalFalshionT3
+  - MedievalKnut
+
+- type: playTimeTracker
+  id: JobMedievalInnkeeperGuard
+
+- type: jobIcon
+  parent: JobIcon
+  id: JobIconMedievalInnkeeperGuard
+  icon:
+    sprite: /Textures/Imperial/Medieval/Misc/job_icons.rsi
+    state: villager_def
+  jobName: job-name-innkeeper-guard
+
+- type: job
+  id: MedievalInnkeeperGuard
+  name: job-name-innkeeper-guard
+  description: job-description-innkeeper-guard
+  playTimeTracker: JobMedievalInnkeeperGuard
+  startingGear: MedievalInnkeeperGuardGear
+  icon: "JobIconMedievalInnkeeperGuard"
+  special:
+  - !type:AddComponentSpecial
+    components:
+    - type: WarningOnAttach
+      message: medieval-warning-base
+    - type: MedievalJobSpawn
+      spawnType: LegionTrader
+    - type: GiveItemObjective
+    - type: MoneyCollector
+      objectivePrototype: MedievalGetMoneyObjective300500
+    - type: MedievalPasportPerson
+      personJob: "[color=cyan]Охрана таверны[/color]"
+      pasport: MedievalPasportLegion
+      #jobPrefix: "[Тав]"
+
+
+- type: roleLoadout
+  id: JobMedievalInnkeeperGuard
+  groups:
+  - MedievalBackpack
+  - MedievalBelt
+  - MedievalTrinkets
+  - MedievalGloves
+  - MedievalShoes
+  - MedievalRepair
+
 
 # MEDIEVAL INNKEEPERN
 
@@ -1915,6 +2095,7 @@
       - MedievalActionDivineTouchBeginner
     - type: MedievalJobSpawn
       spawnType: Default
+    - type: MedievalTraveller
     - type: GiveItemObjective
     - type: MoneyCollector
       objectivePrototype: MedievalGetMoneyObjective300500
@@ -2125,6 +2306,7 @@
       spawnType: Default
     - type: MagicRuneKnowledge
     - type: GiveItemObjective
+    - type: MedievalTraveller
     - type: MoneyCollector
       objectivePrototype: MedievalGetMoneyObjective400800
   requirements:
@@ -2151,7 +2333,7 @@
   #- MedievalBelt
   #- ChaplainMaskMedieval
   #- SurvivalSecurity
-  #- MedievalTrinkets
+  - MedievalTrinkets
   #- MedievalMusic
   #- GroupSpeciesBreathToolSecurity
   - MedievalGloves
@@ -2268,6 +2450,10 @@
     head: MedievalClothingHeadHelmetLegionRecruit
     neck: MedievalClothingNeckCloakClanEagle
     id: MedievalLeatherKey
+  storage:
+    back:
+    - MedievalHandcuffs
+    - MedievalKnut
 
 - type: playTimeTracker
   id: JobMedievalLegionRecruit
@@ -2376,6 +2562,10 @@
     head: MedievalClothingHeadHelmetLegionLegionerNew
     neck: MedievalClothingNeckCloakClanEagle
     id: MedievalLeatherKey
+  storage:
+    back:
+    - MedievalHandcuffs
+    - MedievalKnut
 
 - type: playTimeTracker
   id: JobMedievalLegionLegioner
@@ -2506,6 +2696,10 @@
     head: MedievalClothingHeadHelmetLegionOpcionNew
     neck: MedievalClothingNeckCloakClanEagle
     id: MedievalLeatherKey
+  storage:
+    back:
+    - MedievalHandcuffs
+    - MedievalKnut
 
 - type: playTimeTracker
   id: JobMedievalLegionOpcion
@@ -2576,6 +2770,10 @@
     head: MedievalClothingHeadHelmetLegionTribuneNew
     neck: MedievalClothingNeckCloakClanEagle
     id: MedievalLeatherKey
+  storage:
+    back:
+    - MedievalHandcuffs
+    - MedievalKnut
 
 - type: playTimeTracker
   id: JobMedievalLegionTribun
@@ -2645,6 +2843,12 @@
     neck: MedievalClothingNeckCloakClanEagle
     shoes: MedievalClothingFeetSteel
     id: MedievalLeatherKey
+  storage:
+    back:
+    - MedievalHandcuffs
+    - MedievalKnut
+    - MedievalCommsCrystallLeg
+    - MedievalKeyTreasurer
 
 - type: playTimeTracker
   id: JobMedievalLegionLegat
@@ -2743,6 +2947,11 @@
     head: MedievalClothingHeadTreasurer
     neck: MedievalClothingNeckCloakClanEagle
     id: MedievalLeatherKey
+  storage:
+    back:
+    - MedievalHandcuffs
+    - MedievalKnut
+    - MedievalCommsCrystallLeg
 
 - type: playTimeTracker
   id: JobMedievalLegionTreasurer
@@ -2790,11 +2999,77 @@
       objectivePrototype: MedievalGetMoneyObjective400800
     - type: MedievalPasportPerson
       personJob: "[color=cyan]Казначей легиона[/color]"
-      pasport: MedievalPasportTreasurer
+      pasport: MedievalPasportLegion
       jobPrefix: "[КазЛ]"
 
 - type: roleLoadout
   id: JobMedievalLegionTreasurer
+  groups:
+  - MedievalBackpack
+  - MedievalShoes
+  - MedievalBeltLegion
+  - MedievalTrinkets
+  - MedievalGloves
+
+# MEDIEVAL LEGION TREASURER ASSISTANT
+
+- type: startingGear
+  id: MedievalLegionTreasurerAssistantGear
+  equipment:
+    pocket1: MedievalKeyTreasurer
+    jumpsuit: MedievalClothingTreasurer
+    head: MedievalClothingHeadTreasurer
+    neck: MedievalClothingNeckCloakClanEagle
+    id: MedievalLeatherKey
+  storage:
+    back:
+    - MedievalHandcuffs
+    - MedievalKnut
+    - MedievalCommsCrystallLeg
+
+- type: playTimeTracker
+  id: JobMedievalLegionTreasurerAssistant
+
+- type: jobIcon
+  parent: JobIcon
+  id: JobIconMedievalLegionTreasurerAssistant
+  icon:
+    sprite: /Textures/Imperial/Medieval/Misc/job_icons.rsi
+    state: treasurer
+  jobName: job-name-legionTreasurerAssistant-medieval
+
+- type: job
+  id: MedievalLegionTreasurerAssistant
+  name: job-name-legionTreasurerAssistant-medieval
+  description: job-description-legionTreasurerAssistant-medieval
+  playTimeTracker: JobMedievalLegionTreasurerAssistant
+  requirements:
+  - !type:SpeciesRequirement
+    species:
+    - Skeleton
+    inverted: true
+  startingGear: MedievalLegionTreasurerAssistantGear
+  icon: "JobIconMedievalLegionTreasurerAssistant"
+  special:
+  - !type:AddComponentSpecial
+    components:
+    - type: WarningOnAttach
+      message: medieval-warning-leg
+    - type: MedievalFactionMember
+      faction: Legion
+      factionMenuAction: LegionFactionMenuAction
+    - type: MedievalJobSpawn
+      spawnType: Legion
+    - type: GiveItemObjective
+    - type: MoneyCollector
+      objectivePrototype: MedievalGetMoneyObjective400800
+    - type: MedievalPasportPerson
+      personJob: "[color=cyan]Помощник казначея[/color]"
+      pasport: MedievalPasportLegion
+      jobPrefix: "[КазЛ]"
+
+- type: roleLoadout
+  id: JobMedievalLegionTreasurerAssistant
   groups:
   - MedievalBackpack
   - MedievalShoes
@@ -2925,12 +3200,12 @@
     id: MedievalKeyLegionAlch
   storage:
     back:
-    - MedievalChemistryRecipe
-    - MedievalChemistryRecipe
-    - MedievalChemistryRecipe
-    - MedievalChemistryRecipe
-    - MedievalChemistryRecipe
     - MedievalRecipeBook
+    - MedievalChemistryRecipe
+    - MedievalChemistryRecipe
+    - MedievalChemistryRecipe
+    - MedievalChemistryRecipe
+    - MedievalChemistryRecipe
 
 - type: playTimeTracker
   id: JobMedievalLegionAlchemic
@@ -2998,7 +3273,7 @@
   #- MedievalMusic
   #- GroupSpeciesBreathToolSecurity
   - MedievalGloves
-  - MedievalRepair
+  #- MedievalRepair
 
 # MEDIEVAL Insurgency RECRUIT
 
@@ -3350,6 +3625,9 @@
     neck: MedievalClothingNeckCloakClanFox
     id: MedievalKeyGuard
     shoes: MedievalClothingFeetSteel
+  storage:
+    back:
+    - MedievalCommsCrystallIns
 
 - type: playTimeTracker
   id: JobMedievalInsurgencyLegat
@@ -3520,12 +3798,12 @@
     id: MedievalKeyRebelAlch
   storage:
     back:
-    - MedievalChemistryRecipe
-    - MedievalChemistryRecipe
-    - MedievalChemistryRecipe
-    - MedievalChemistryRecipe
-    - MedievalChemistryRecipe
     - MedievalRecipeBook
+    - MedievalChemistryRecipe
+    - MedievalChemistryRecipe
+    - MedievalChemistryRecipe
+    - MedievalChemistryRecipe
+    - MedievalChemistryRecipe
 
 - type: playTimeTracker
   id: JobMedievalInsurgencyAlchemic
@@ -3592,7 +3870,7 @@
   #- MedievalMusic
   #- GroupSpeciesBreathToolSecurity
   - MedievalGloves
-  - MedievalRepair
+  #- MedievalRepair
 
 
 # MEDIEVAL BANDIT RECRUIT
@@ -3601,7 +3879,7 @@
   id: MedievalBanditRecruitGear
   equipment:
     pocket1: MedievalRevent25
-    pocket2: MedievalCommsCrystallBand
+    #pocket2: MedievalCommsCrystallBand
     jumpsuit: MedievalClothingUniformJumpsuitShitCloth16
     mask: MedievalMaskFace
     head: MedievalClothingHeadHelmetHood
@@ -3634,9 +3912,9 @@
     components:
     - type: WarningOnAttach
       message: medieval-warning-band
-    - type: MedievalFactionMember
-      faction: Bandit
-      factionMenuAction: BanditFactionMenuAction
+    #- type: MedievalFactionMember
+    #  faction: Bandit
+    #  factionMenuAction: BanditFactionMenuAction
     #- type: IdentityFaction
     #  faction: Bandit
     - type: MedievalJobSpawn
@@ -3644,10 +3922,10 @@
     - type: GiveItemObjective
     - type: MoneyCollector
       objectivePrototype: MedievalGetMoneyObjective300500
-    - type: MedievalPasportPerson
-      personJob: "[color=gray]Молодняк банды[/color]"
-      pasport: "no"
-      jobPrefix: "[МолБ]"
+    #- type: MedievalPasportPerson
+    #  personJob: "[color=gray]Молодняк банды[/color]"
+    #  pasport: "no"
+    #  jobPrefix: "[МолБ]"
 
 - type: roleLoadout
   id: JobMedievalBanditRecruit
@@ -4214,6 +4492,9 @@
     head: MedievalMercLeadHat
     neck: MedievalClothingNeckCloakClanMerc
     id: MedievalFarmerKey
+  storage:
+    back:
+    - MedievalCommsCrystallMerc
 
 - type: playTimeTracker
   id: JobMedievalMercLeader
@@ -4461,6 +4742,7 @@
   storage:
     back:
     - MedievalSpellBookRecodeCollegiumStrong
+    - MedievalCommsCrystallColl
 
 - type: playTimeTracker
   id: JobMedievalCollegiumLeader
@@ -5086,6 +5368,9 @@
     #head: MedievalClothingHeadHelmetShapel
     neck: MedievalClothingNeckCloakClanMine
     id: MedievalWoodKey
+  storage:
+    back:
+    - MedievalCommsCrystallMine
 
 - type: playTimeTracker
   id: JobMedievalMinerLeader
@@ -5613,10 +5898,16 @@
 - type: roleLoadout
   id: JobMedievalVillager
   groups:
+  - TravellerHead
+  - TravellerJumpsuitVillage
+  - MedievalNeck
   - MedievalBackpack
+  - MedievalShoes
   - MedievalBelt
   - MedievalTrinkets
+  - MedievalGloves
   - MedievalRepair
+  - MedievalVillagerStash
 
 
 # MEDIEVAL Villager REGULAR Def
@@ -5669,6 +5960,9 @@
 - type: roleLoadout
   id: JobMedievalVillagerDef
   groups:
+  - TravellerHead
+  - TravellerJumpsuitVillage
+  - MedievalNeck
   - MedievalBackpack
   - MedievalBelt
   - MedievalTrinkets
@@ -5742,6 +6036,9 @@
 - type: roleLoadout
   id: JobMedievalVillagerLeader
   groups:
+  - TravellerHead
+  - TravellerJumpsuitVillage
+  - MedievalNeck
   - MedievalBackpack
   - MedievalShoes
   - MedievalBelt
@@ -5755,4 +6052,64 @@
     back:
     - MedievalFlinter
 
+- type: loadout
+  id: FoodBreadMeat
+  storage:
+    back:
+    - FoodBreadMeat
 
+- type: loadoutGroup
+  id: TravellerJumpsuitVillage
+  name: loadout-group-traveller-jumpsuit
+  minLimit: 0
+  maxLimit: 1
+  loadouts:
+  - TravellerDefault
+  - TravellerDefault2
+  - TravellerFine1
+  - TravellerFine2
+  - TravellerFine3
+  - TravellerFine4
+  - TravellerFine5
+  - TravellerFine6
+  - TravellerFine7
+  - TravellerFine8
+  - TravellerFine9
+  - TravellerFine10
+  - TravellerFine11
+  - TravellerFine12
+  - TravellerFine13
+  - TravellerFine14
+  - TravellerFine15
+  - TravellerBeaty1
+  - TravellerBeaty2
+  - TravellerBeaty3
+  - TravellerBeaty4
+  - TravellerBeaty5
+  - TravellerBeaty6
+  - TravellerBeaty7
+  - TravellerBeaty8
+  - TravellerBeaty9
+  - TravellerBeaty9_2
+  - TravellerBeaty10
+  - TravellerBeaty11
+  - TravellerBeaty12
+  - TravellerBeaty13
+  - TravellerBeaty14
+  - TravellerBeaty15
+  - TravellerBeaty16
+  - TravellerBeaty17
+  - TravellerBeaty18
+  - TravellerBeaty19
+  - TravellerBeaty20
+  - TravellerBeaty21
+  - TravellerGold
+  - TravellerGold2
+  - TravellerGold3
+  - TravellerGold4
+  - TravellerVillage1
+  - TravellerVillage2
+  - TravellerVillage3
+  - TravellerVillage4
+  - TravellerVillage5
+  - TravellerVillage6

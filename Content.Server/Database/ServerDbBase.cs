@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Content.Server.Administration.Logs;
 using Content.Server.Administration.Managers;
 using Content.Shared.Administration.Logs;
-using Content.Shared.Imperial.Medieval.Language;
 using Content.Shared.Construction.Prototypes;
 using Content.Shared.Database;
 using Content.Shared.Humanoid;
@@ -25,7 +24,6 @@ using Robust.Shared.Network;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Utility;
 using Content.Shared.Imperial.Medieval.PlayerCreations;
-using Content.Shared.Imperial.Medieval.Skills;
 
 namespace Content.Server.Database
 {
@@ -612,6 +610,12 @@ namespace Content.Server.Database
             return paintings;
         }
 
+        public async Task<bool> HasPendingPainting(Guid authorUserId, CancellationToken cancel)
+        {
+            await using var db = await GetDb(cancel);
+            return await db.DbContext.Paintings.AnyAsync(p => p.AuthorUserId == authorUserId && !p.Accepted, cancel);
+        }
+
         public async Task AddPainting(Color[] texture,
             string name,
             string description,
@@ -739,6 +743,12 @@ namespace Content.Server.Database
                 .ToListAsync(cancel);
 
             return books;
+        }
+
+        public async Task<bool> HasPendingBook(Guid authorUserId, CancellationToken cancel)
+        {
+            await using var db = await GetDb(cancel);
+            return await db.DbContext.Books.AnyAsync(b => b.AuthorUserId == authorUserId && !b.Accepted, cancel);
         }
 
         public async Task AddBook(string text,
@@ -1197,6 +1207,52 @@ namespace Content.Server.Database
             await db.DbContext.SaveChangesAsync(cancel);
         }
 
+        public async Task<List<Praise>> GetPraises(Guid id, CancellationToken cancel)
+        {
+            await using var db = await GetDb(cancel);
+            return await db.DbContext.Praises.Where(p => p.GivenTo == id).ToListAsync(cancel);
+        }
+
+        public async Task AddPraise(Praise praise, CancellationToken cancel)
+        {
+            await using var db = await GetDb(cancel);
+            db.DbContext.Praises.Add(praise);
+            await db.DbContext.SaveChangesAsync(cancel);
+        }
+
+        public async Task AddPraises(IEnumerable<Praise> praises, CancellationToken cancel)
+        {
+            await using var db = await GetDb(cancel);
+            db.DbContext.Praises.AddRange(praises);
+            await db.DbContext.SaveChangesAsync(cancel);
+        }
+
+        public async Task RemovePraise(Guid givenTo, Guid givenBy, DateTime date, CancellationToken cancel)
+        {
+            await using var db = await GetDb(cancel);
+
+            var row = db.DbContext.Praises.Find(givenTo, givenBy, date);
+            if (row == null)
+                return;
+
+            db.DbContext.Praises.Remove(row);
+            await db.DbContext.SaveChangesAsync(cancel);
+        }
+
+        public async Task EditPraise(Praise replacement, CancellationToken cancel)
+        {
+            await using var db = await GetDb(cancel);
+
+            var row = db.DbContext.Praises.Find(replacement.GivenTo, replacement.GivenBy, replacement.Date);
+            if (row == null)
+                return;
+
+            row.GivenByName = replacement.GivenByName;
+            row.Reason = replacement.Reason;
+            row.Weight = replacement.Weight;
+            await db.DbContext.SaveChangesAsync(cancel);
+        }
+
         #endregion
 
         #region Playtime
@@ -1304,6 +1360,23 @@ namespace Content.Server.Database
                 .SingleOrDefaultAsync(p => p.UserId == userId.UserId, cancel);
 
             return record == null ? null : MakePlayerRecord(record);
+        }
+
+        public async Task<Dictionary<Guid, PlayerRecord>> GetPlayerRecordsByUserIds(
+            IReadOnlyCollection<NetUserId> userIds, CancellationToken cancel = default)
+        {
+            if (userIds.Count == 0)
+                return new Dictionary<Guid, PlayerRecord>();
+
+            await using var db = await GetDb(cancel);
+
+            var ids = userIds.Select(u => u.UserId).ToArray();
+
+            var records = await db.DbContext.Player
+                .Where(p => ids.Contains(p.UserId))
+                .ToListAsync(cancel);
+
+            return records.ToDictionary(r => r.UserId, r => MakePlayerRecord(r)!);
         }
 
         protected async Task<bool> PlayerRecordExists(DbGuard db, NetUserId userId)

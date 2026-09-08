@@ -325,7 +325,7 @@
 - type: trait
   id: SkillOneHandedBlunt
   name: Мастер булав
-  description: +15% урона, +8 урона стамине. Дополнительный урон, пробивающий броню при ЛКМ ударе.
+  description: Больше урона, больше урона стамине. Дополнительный урон, пробивающий броню при ЛКМ ударе.
   category: WeaponSkills
   cost: 1
   components:
@@ -334,7 +334,7 @@
 - type: trait
   id: SkillOneHandedBluntLight
   name: Владение легкими булавами
-  description: +15% урона, +4 урона стамине. Дополнительный урон, пробивающий броню при ЛКМ ударе.
+  description: Больше урона, больше урона стамине. Дополнительный урон, пробивающий броню при ЛКМ ударе.
   category: WeaponSkills
   cost: 1
   components:
@@ -411,3 +411,19 @@
   cost: 1
   components:
   - type: ShieldSkill
+
+- type: traitCategory
+  id: SpawnPriority
+  name: Spawn priority
+  description: Works with wandering roles only
+  maxTraitPoints: 1
+
+- type: trait
+  id: SpawnPriorityRebel
+  name: Rebel town
+  description: Spawn in rebel town if possible
+  category: SpawnPriority
+  cost: 1
+  components:
+  - type: MedievalJobSpawnTraveller
+    spawnType: InsurgencyTrader

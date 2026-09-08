@@ -60,12 +60,8 @@ public sealed class ShipsCCVars : CVars
         CVarDef.Create("ships.stormmaxlevel", 8f, CVar.REPLICATED | CVar.SERVER);
     public static readonly CVarDef<float> StormRainLevel =  // С какого уровня шторма начинается дождь
         CVarDef.Create("ships.stormrainlevel", 4f, CVar.REPLICATED | CVar.SERVER);
-    public static readonly CVarDef<string> StormRainWeather =
-        CVarDef.Create("ships.stormrainweather", "Rain", CVar.REPLICATED | CVar.SERVER);
     public static readonly CVarDef<float> StormStormLevel = // С какого уровня шторма начинается шторм
         CVarDef.Create("ships.stormstormlevel", 5f, CVar.REPLICATED | CVar.SERVER);
-    public static readonly CVarDef<string> StormStormWeather =
-        CVarDef.Create("ships.stormstormweather", "Storm", CVar.REPLICATED | CVar.SERVER);
     /// <summary>
     /// скорость с которой волна спавнится
     /// </summary>
@@ -93,6 +89,8 @@ public sealed class ShipsCCVars : CVars
     /// </summary>
     public static readonly CVarDef<int> WaveMaxBreakCount =
         CVarDef.Create("ships.wavemaxbreakcount", 3, CVar.REPLICATED | CVar.SERVER);
+    public static readonly CVarDef<float> TileBreakChancePerStormLevel =
+        CVarDef.Create("ships.tilebreakchanceperstormlevel", 0.12f, CVar.REPLICATED | CVar.SERVER);
     /// <summary>
     /// Минимальный уровень для поломки лодки (Шторма если кто не понял)
     /// </summary>

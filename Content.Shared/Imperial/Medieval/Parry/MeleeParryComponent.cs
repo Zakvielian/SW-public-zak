@@ -6,12 +6,6 @@ namespace Content.Shared.MeleeParry.Components
     [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
     public sealed partial class MeleeParryComponent : Component
     {
-        [ViewVariables(VVAccess.ReadOnly)]
-        public EntityUid? LastSuccessParriedAttacker; //Нужно для парирования урона стамине, после этого оно обнулится
-
-        [ViewVariables(VVAccess.ReadOnly)]
-        public TimeSpan LastSuccessParriedTime;  //Нужно для парирования урона стамине, после этого оно обнулится
-
         [DataField]
         [ViewVariables(VVAccess.ReadOnly)]
         public TimeSpan ParriedTime = TimeSpan.Zero;
@@ -20,6 +14,9 @@ namespace Content.Shared.MeleeParry.Components
         public string ParryEffectSuccess = "MedievalEffectSuccessParry";
         [DataField]
         public string ParryEffectWindow = "MedievalEffectWindowParry";
+
+        [DataField]
+        public SoundSpecifier ParryWindowSound = new SoundCollectionSpecifier("MeleeParryWindow");
 
         [ViewVariables(VVAccess.ReadWrite)]
         public float ParryWindow = 0.8f;
@@ -33,6 +30,9 @@ namespace Content.Shared.MeleeParry.Components
 
         [DataField]
         public float ParryStaminaDamage = 20f;
+
+        [DataField]
+        public TimeSpan LastParryTime;
     }
 
     [RegisterComponent, NetworkedComponent]

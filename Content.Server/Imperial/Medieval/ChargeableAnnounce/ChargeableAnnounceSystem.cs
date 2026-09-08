@@ -96,7 +96,7 @@ public sealed class ChargeableAnnounceSystem : EntitySystem
         if (Deleted(comp.OwnerUid.Value))
             return;
 
-        var ownerName = Identity.Name(comp.OwnerUid.Value, EntityManager);
+        var ownerName = Name(comp.OwnerUid.Value);
         args.PushMarkup($"[color=gray]Владелец: {ownerName}[/color]");
     }
 
@@ -156,6 +156,12 @@ public sealed class ChargeableAnnounceSystem : EntitySystem
             announce.IsCharged = false;
             Dirty(uid, announce);
         });
+    }
+
+    public void SendCommsCrystalWhisper(EntityUid crystal, EntityUid sender, string originalMessage)
+    {
+        var language = _language.GetCurrentLanguage(sender);
+        SendCommsCrystalWhisper(crystal, sender, originalMessage, language);
     }
 
     private void SendCommsCrystalWhisper(

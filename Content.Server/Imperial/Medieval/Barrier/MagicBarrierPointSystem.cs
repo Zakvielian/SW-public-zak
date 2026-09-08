@@ -23,6 +23,7 @@ using Content.Shared.Verbs;
 using Content.Server.Imperial.Medieval.GameTicking.Rules;
 using Content.Shared.GameTicking;
 using Content.Server.Cult.Components;
+using Content.Server.GameTicking;
 
 namespace Content.Server.MagicBarrier
 {
@@ -38,6 +39,7 @@ namespace Content.Server.MagicBarrier
         [Dependency] private readonly MagicRuneSystem _rune = default!;
         [Dependency] private readonly DamageableSystem _damageable = default!;
         [Dependency] private readonly AchievementSystem _achievement = default!;
+        [Dependency] private readonly GameTicker _gameTicker = default!;
 
         public static bool IsBarrierActive = true;
         private static readonly string[] ElementalRiftPrototypes =
@@ -126,7 +128,7 @@ namespace Content.Server.MagicBarrier
                 _audio.PlayPvs(new SoundPathSpecifier(barrier.EffectSoundOnScrollAdd), target.Value);
                 QueueDel(used);
 
-                _achievement.TryUpdateProgressAndGrant(user, new BarrierRefilledContext(), 
+                _achievement.TryUpdateProgressAndGrant(user, new BarrierRefilledContext(),
                     ach => ach.Conditions.Any(c => c is RefillBarrierCondition));
                 return;
             }
@@ -411,10 +413,14 @@ namespace Content.Server.MagicBarrier
                             _chat.DispatchGlobalAnnouncement("Падающая звезда была замечена " + choosenSpawner.Side + ". Для магической карты: X = " + cordX + ", Y = " + cordY + ".", playSound: true, colorOverride: Color.Yellow, sender: "Событие");
                             Spawn("MedievalSteroidRoomMarker", starfallcoords);
                         }
-                        else
+                        else if (randomise > comp.AncientNocturneEventChance)
                         {
                             _chat.DispatchGlobalAnnouncement("Аура проклятого каравана была обнаружена " + choosenSpawner.Side + ". Для магической карты: X = " + cordX + ", Y = " + cordY + ".", playSound: true, colorOverride: Color.Yellow, sender: "Событие");
                             Spawn("MedievalKaravanRoomMarker", starfallcoords);
+                        }
+                        else
+                        {
+                            _gameTicker.StartGameRule("MedievalAncientNocturneSpawnRule");
                         }
                     }
 
@@ -440,12 +446,12 @@ namespace Content.Server.MagicBarrier
                     //    _chat.DispatchGlobalAnnouncement("Бойтесь, ОНИ идут... Объединение - единственный шанс на спасение.", playSound: true, colorOverride: Color.DeepPink, sender: "Барьер");
                     //}
 
-                    if (comp.Cycle == 180)
-                    {
-                        IsBarrierActive = false;
-                        _chat.DispatchGlobalAnnouncement("Барьер изветшал и рассыпался в пыль.", playSound: true, colorOverride: Color.Red, sender: "Барьер");
-                        _roundEndSystem.EndRound();
-                    }
+                    // if (comp.Cycle == 180)
+                    // {
+                    //     IsBarrierActive = false;
+                    //     _chat.DispatchGlobalAnnouncement("Барьер изветшал и рассыпался в пыль.", playSound: true, colorOverride: Color.Red, sender: "Барьер");
+                    //     _roundEndSystem.EndRound();
+                    // }
                 }
             }
         }

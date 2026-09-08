@@ -10,6 +10,8 @@
   - MedievalBum
   - MedievalInnkeeper
   - MedievalInnkeeperN
+  - MedievalInnkeeperAssistant
+  - MedievalInnkeeperGuard
   - MedievalChaplain
   - MedievalWanderMag
   - MedievalArchivist
@@ -25,6 +27,7 @@
   - MedievalLegionRecruit
   - MedievalLegionLegioner
   - MedievalLegionTreasurer
+  - MedievalLegionTreasurerAssistant
   - MedievalLegionGateman
   - MedievalLegionOpcion
   - MedievalLegionTribun
@@ -55,9 +58,9 @@
   color: "#CCCCCC"
   roles:
   - MedievalBanditRecruit
-  - MedievalBanditRegular
-  - MedievalBanditVeteran
-  - MedievalBanditLeader
+  #- MedievalBanditRegular
+  #- MedievalBanditVeteran
+  #- MedievalBanditLeader
 
 - type: department
   id: Kayot
