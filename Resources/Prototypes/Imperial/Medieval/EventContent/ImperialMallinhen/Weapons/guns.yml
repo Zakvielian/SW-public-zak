@@ -271,7 +271,7 @@
     soundHit:
       collection: MeatBulletImpact
   - type: StaminaDamageOnCollide
-    damage: 10
+    damage: 18
   - type: Sprite
     sprite: Objects/Weapons/Guns/Projectiles/projectiles2.rsi
     state: buckshot
