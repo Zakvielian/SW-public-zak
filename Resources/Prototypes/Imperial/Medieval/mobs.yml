@@ -4245,8 +4245,7 @@
           radius: 0.45
         density: 50
         mask:
-        - Impassable
-        - HighImpassable
+        - MobMask
         layer:
         - MobLayer
   - type: Appearance
@@ -4326,10 +4325,6 @@
       amount: 1
     - id: MedievalWingedShadowRandomOreSpawner
       amount: 1
-  - type: DamageOnContact
-    damage:
-      types:
-        Structural: 250
 
 - type: entity
   name: MedievalMobAngler
@@ -4339,7 +4334,7 @@
   components:
   - type: ForcedSleepImmune
   - type: MedievalTimedDespawn
-    lifetime: 300
+    lifetime: 240
   - type: Sprite
     drawdepth: Mobs
     sprite: Imperial/Medieval/Mobs/angler.rsi
@@ -4372,7 +4367,7 @@
       groups:
         Brute: 56
       types:
-        ParryAble: 0.5
+        ParryAble: 1.5
         Caustic: 1
         Bloodloss: 3
   - type: Puller
