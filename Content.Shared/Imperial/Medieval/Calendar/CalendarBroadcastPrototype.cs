@@ -50,6 +50,27 @@ public sealed partial class CalendarEventPrototype : IPrototype
     /// </summary>
     [DataField("minOffset")]
     public int MinOffset { get; private set; } = 1;
+
+    [DataField("minPlayers")]
+
+    /// <summary>
+    /// Минимальное количество игроков необходимое для включения этого события в календарь
+    /// </summary>
+    public int MinPlayers { get; private set; } = 0;
+
+
+    /// <summary>
+    /// Максимальное количество игроков необходимое для включения этого события в календарь. Если больше, то день не будет включен в календарь
+    /// </summary>
+    [DataField("maxPlayers")]
+    public int MaxPlayers { get; private set; } = int.MaxValue;
+
+    /// <summary>
+    /// Спавн прототипов по айди маркера CalendarSpawnMarkerComponent
+    /// </summary>
+
+    [DataField("spawns")]
+    public Dictionary<EntProtoId, string>? Spawns { get; private set; }
 }
 
 public enum CalendarDayType : byte

@@ -58,11 +58,16 @@
     path: "/Audio/Effects/church_bell1.ogg"
   weight: 100.5
   minDay: 3
+  minPlayers: 10 # Нужно минимум 10 игроков для включения этого ивента
+  maxPlayers: 15 # Если будет больше 15, то ивент не будет включен
   maxOccurrences: 1
   minOffset: 2
   tags:
     - Day
     - TradeEvent
+  spawns:
+    MobHuman: FairSpawnMarker # Нужно навесить на объект в мире компонент CalendarSpawnMarkerComponent и указать там айди такой же как
+    CrowbarRed: FairWeaponMarker # Можно создавать множество спавном при необходимости
 
 # 4. Солнечное затмение
 - type: calendarEvent
