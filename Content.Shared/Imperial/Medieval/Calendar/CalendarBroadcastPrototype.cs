@@ -25,10 +25,21 @@ public sealed partial class CalendarEventPrototype : IPrototype
     public HashSet<string> Tags { get; private set; } = new();
 
     /// <summary>
-    /// Вес. Чем выше - тем больше шанс появления этого дня
+    /// Вес. Чем выше - тем больше шанс появления этого дня.
     /// </summary>
     [DataField("weight")]
     public float Weight { get; private set; } = 1.0f;
+
+    /// <summary>
+    /// Кривая веса. Вычисляет вес для промежуточных дней пропорционально расстоянию между точками. Если не задано, то никак не влияет. Если запрашивается день больше существующих точек, то алгоритм вернет значение последней доступной точки
+    /// </summary>
+    [DataField("weightCurve")]
+    public CalendarWeightCurve? WeightCurve { get; private set; }
+
+    public float GetWeight(int day)
+    {
+        return WeightCurve != null ? WeightCurve.Evaluate(day) : Weight;
+    }
 
     /// <summary>
     /// Максимальное количество таких дней в раунде
@@ -70,7 +81,7 @@ public sealed partial class CalendarEventPrototype : IPrototype
     /// </summary>
 
     [DataField("spawns")]
-    public Dictionary<EntProtoId, string>? Spawns { get; private set; }
+    public Dictionary<EntProtoId, List<string>>? Spawns { get; private set; }
 }
 
 public enum CalendarDayType : byte

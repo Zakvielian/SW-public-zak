@@ -3,6 +3,7 @@ using Content.Server.Imperial.DayTime;
 using Content.Shared.Administration;
 using Content.Shared.GameTicking;
 using Robust.Shared.Console;
+using Robust.Shared.Map;
 using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Random;
@@ -47,14 +48,24 @@ public sealed class CalendarSystem : EntitySystem
         if (args.Prototype.Spawns == null || args.Prototype.Spawns.Count == 0)
             return;
 
+        foreach (var (entProto, targetMarkers) in args.Prototype.Spawns)
+        {
+            foreach (var markerId in targetMarkers)
+            {
+                if (string.IsNullOrWhiteSpace(markerId) || markerId.Equals("Global", StringComparison.OrdinalIgnoreCase))
+                    Spawn(entProto, MapCoordinates.Nullspace);
+            }
+        }
+
         var query = EntityQueryEnumerator<CalendarSpawnMarkerComponent, TransformComponent>();
         while (query.MoveNext(out var uid, out var marker, out var xform))
         {
-            foreach (var (entProto, targetMarkerId) in args.Prototype.Spawns)
+            foreach (var (entProto, targetMarkers) in args.Prototype.Spawns)
             {
-                if (marker.MarkerId == targetMarkerId)
+                foreach (var targetMarkerId in targetMarkers)
                 {
-                    Spawn(entProto, xform.Coordinates);
+                    if (targetMarkerId == marker.MarkerId)
+                        Spawn(entProto, xform.Coordinates);
                 }
             }
         }
@@ -146,7 +157,7 @@ public sealed class CalendarSystem : EntitySystem
             var totalWeight = 0f;
             for (var i = 0; i < candidates.Count; i++)
             {
-                totalWeight += candidates[i].Weight;
+                totalWeight += candidates[i].GetWeight(day);
             }
 
             var roll = _random.NextFloat() * totalWeight;
@@ -155,7 +166,7 @@ public sealed class CalendarSystem : EntitySystem
 
             for (var i = 0; i < candidates.Count; i++)
             {
-                acc += candidates[i].Weight;
+                acc += candidates[i].GetWeight(day);
                 if (roll <= acc)
                 {
                     selected = candidates[i];
