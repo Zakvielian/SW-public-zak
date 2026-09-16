@@ -1,0 +1,130 @@
+- type: entity
+  parent:
+    - SimpleMobBaseNoFood
+  id: MedievalMobDog
+  components:
+  - type: Sprite
+    drawdepth: Mobs
+    sprite: Imperial/Medieval/Mobs/dogs.rsi
+    layers:
+    - map: [ "enum.DamageStateVisualLayers.Base" ]
+      state: borzoi_0
+  - type: Physics
+  - type: PassiveDamage
+    allowedStates:
+    - Alive
+    - Critical
+    damageCap: 200
+    damage:
+      groups:
+        Brute: -0.25
+        Burn: -0.25
+        Airloss: -0.5
+        Toxin: -0.25
+      types:
+        Cellular: -0.5
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape: !type:PhysShapeCircle
+          radius: 0.35
+        density: 50
+        mask:
+        - MobMask
+        layer:
+        - MobLayer
+  - type: Appearance
+  - type: DamageStateVisuals
+    states:
+      Alive:
+        Base: borzoi_0
+      Dead:
+        Base: borzoi_0_dead
+  - type: Butcherable
+    spawned:
+    - id: FoodMeat
+      amount: 4
+    - id: MedievalLeather1
+      amount: 3
+  - type: MindContainer
+    showExamineInfo: true
+  - type: Bloodstream
+    bloodMaxVolume: 40
+    bloodlossDamage:
+      types:
+        Bloodloss: 1
+    bloodlossHealDamage:
+      types:
+        Bloodloss: -1
+  - type: StaminaDamageOnHit
+    damage: 10
+  - type: MeleeWeapon
+    hidden: true
+    altDisarm: false
+    angle: 0
+    soundHit:
+      collection: AlienClaw
+    animation: WeaponArcBite
+    damage:
+      groups:
+        Brute: 10.4
+      types:
+        ParryAble: 1
+  - type: Puller
+    needsHands: false
+  - type: MobThresholds
+    thresholds:
+      0: Alive
+      95: Critical
+      190: Dead
+  - type: MovementSpeedModifier
+    baseWalkSpeed: 3.75
+    baseSprintSpeed: 3.0
+  - type: SlowOnDamage
+    speedModifierThresholds:
+      40: 1
+      55: 0.9
+      65: 0.87
+      75: 0.85
+      90: 0.82
+  - type: NpcFactionMember
+    factions:
+    - NanoTrasen
+  - type: MedievalDash
+    force: 750
+  - type: InputMover
+  - type: MobMover
+  - type: Vocal
+    sounds:
+      Unsexed: Dog
+  - type: NocturnBadFood
+    timesCanBeBiten: 3
+  - type: LanguageSpeaker
+    languages:
+      Common: Understand
+      Goblin: Understand
+      #Ancient: Speak
+      #Tribe: Speak
+      #Orc: Speak
+      #Cursed: Speak
+      Growling: Speak
+      Hissing: Understand
+      #Elf: Speak
+  - type: AllergySpreader
+    id: Fur
+  - type: Speech
+  - type: ComplexInteraction
+  - type: TypingIndicator
+    proto: wolf
+
+- type: soundCollection
+  id: DogBarkCollection
+  files:
+    - /Audio/Animals/dog_bark1.ogg
+    - /Audio/Animals/dog_bark2.ogg
+    - /Audio/Animals/dog_bark3.ogg
+
+- type: emoteSounds
+  id: Dog
+  sound:
+    collection: DogBarkCollection
