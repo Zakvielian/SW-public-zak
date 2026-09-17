@@ -10,6 +10,7 @@
     - map: [ "enum.DamageStateVisualLayers.Base" ]
       state: borzoi_0
   - type: Physics
+  - type: Sharp
   - type: PassiveDamage
     allowedStates:
     - Alive
@@ -128,3 +129,13 @@
   id: Dog
   sound:
     collection: DogBarkCollection
+
+
+- type: entity
+  parent: BaseItem
+  id: DogCollar
+  components:
+  - type: Sprite
+    sprite: Objects/Specific/Research/researchdisk.rsi
+    state: icon
+  - type: DogCollar

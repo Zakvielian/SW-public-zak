@@ -1,0 +1,26 @@
+<DefaultWindow xmlns="https://spacestation14.io"
+               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+               Title="{Loc 'wolf-to-dog-title'}"
+               MinSize="400 150"
+               SetSize="400 150"
+               x:Class="Content.Client.Imperial.Medieval.Dogs.WolfToDogOffer">
+
+    <BoxContainer Orientation="Vertical"
+                  Margin="10"
+                  VerticalAlignment="Center"
+                  HorizontalAlignment="Center"
+                  SeparationOverride="12">
+
+        <Label Text="{Loc 'wolf-to-dog-offer-text'}"
+               HorizontalAlignment="Center" />
+
+        <BoxContainer Orientation="Horizontal"
+                      HorizontalAlignment="Center"
+                      SeparationOverride="10">
+            <Button Name="ApplyButton"
+                    Text="{Loc 'wolf-to-dog-apply'}" />
+            <Button Name="RejectButton"
+                    Text="{Loc 'wolf-to-dog-reject'}" />
+        </BoxContainer>
+    </BoxContainer>
+</DefaultWindow>
