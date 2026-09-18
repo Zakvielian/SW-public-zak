@@ -133,9 +133,9 @@
 
 - type: entity
   parent: BaseItem
-  id: DogCollar
+  id: PetCollar
   components:
   - type: Sprite
     sprite: Objects/Specific/Research/researchdisk.rsi
     state: icon
-  - type: DogCollar
+  - type: PetCollar

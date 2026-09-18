@@ -6,7 +6,7 @@ using Robust.Shared.Player;
 
 namespace Content.Shared.Imperial.Medieval.Dogs;
 
-public partial class WolfToDogSystem : EntitySystem
+public partial class PetSystem : EntitySystem
 {
     [Dependency] private readonly SharedDoAfterSystem _doAfter = default!;
     [Dependency] private readonly SharedUserInterfaceSystem _ui = default!;
@@ -17,24 +17,24 @@ public partial class WolfToDogSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<WolfToDogComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<WolfToDogComponent, DogCollarEvent>(OnDogCollarEvent);
-        SubscribeLocalEvent<WolfToDogComponent, WolfToDogOfferMessage>(OnOfferResponse);
+        SubscribeLocalEvent<TameTargetComponent, InteractUsingEvent>(OnInteractUsing);
+        SubscribeLocalEvent<TameTargetComponent, PetCollarEvent>(OnPetCollarEvent);
+        SubscribeLocalEvent<TameTargetComponent, PetOfferMessage>(OnOfferResponse);
     }
 
-    private void OnInteractUsing(Entity<WolfToDogComponent> ent, ref InteractUsingEvent args)
+    private void OnInteractUsing(Entity<TameTargetComponent> ent, ref InteractUsingEvent args)
     {
         if (args.Handled)
             return;
 
-        if (!HasComp<DogCollarComponent>(args.Used))
+        if (!HasComp<PetCollarComponent>(args.Used))
             return;
 
         var doAfter = new DoAfterArgs(
             EntityManager,
             args.User,
             TimeSpan.FromSeconds(2f),
-            new DogCollarEvent(),
+            new PetCollarEvent(),
             ent.Owner,
             target: ent.Owner,
             used: args.Used)
@@ -52,7 +52,7 @@ public partial class WolfToDogSystem : EntitySystem
             args.Handled = true;
     }
 
-    private void OnDogCollarEvent(Entity<WolfToDogComponent> ent, ref DogCollarEvent args)
+    private void OnPetCollarEvent(Entity<TameTargetComponent> ent, ref PetCollarEvent args)
     {
         if (args.Cancelled || args.Handled)
             return;
@@ -66,18 +66,18 @@ public partial class WolfToDogSystem : EntitySystem
                 return;
 
             ent.Comp.PendingCollar = collarUid;
-            _ui.TryOpenUi(ent.Owner, WolfToDogOfferUiKey.Key, ent.Owner);
+            _ui.TryOpenUi(ent.Owner, PetOfferUiKey.Key, ent.Owner);
         }
 
         args.Handled = true;
     }
 
-    private void OnOfferResponse(Entity<WolfToDogComponent> ent, ref WolfToDogOfferMessage args)
+    private void OnOfferResponse(Entity<TameTargetComponent> ent, ref PetOfferMessage args)
     {
         if (!_net.IsServer)
             return;
 
-        _ui.CloseUi(ent.Owner, WolfToDogOfferUiKey.Key, args.Actor);
+        _ui.CloseUi(ent.Owner, PetOfferUiKey.Key, args.Actor);
 
         var collar = ent.Comp.PendingCollar;
         ent.Comp.PendingCollar = null;
@@ -88,7 +88,7 @@ public partial class WolfToDogSystem : EntitySystem
             OnRejected(ent, collar);
     }
 
-    protected virtual void OnAccepted(Entity<WolfToDogComponent> ent, EntityUid collar)
+    protected virtual void OnAccepted(Entity<TameTargetComponent> ent, EntityUid collar)
     {
         var dog = SpawnAtPosition(ent.Comp.DogProtoId, Transform(ent).Coordinates);
 
@@ -101,7 +101,8 @@ public partial class WolfToDogSystem : EntitySystem
         QueueDel(ent);
     }
 
-    protected virtual void OnRejected(Entity<WolfToDogComponent> wolf, EntityUid? collar)
+    protected virtual void OnRejected(Entity<TameTargetComponent> wolf, EntityUid? collar)
     {
+
     }
 }

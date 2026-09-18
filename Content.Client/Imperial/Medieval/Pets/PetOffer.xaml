@@ -3,7 +3,7 @@
                Title="{Loc 'wolf-to-dog-title'}"
                MinSize="400 150"
                SetSize="400 150"
-               x:Class="Content.Client.Imperial.Medieval.Dogs.WolfToDogOffer">
+               x:Class="Content.Client.Imperial.Medieval.Dogs.PetOffer">
 
     <BoxContainer Orientation="Vertical"
                   Margin="10"

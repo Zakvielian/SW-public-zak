@@ -462,11 +462,11 @@
     name: ghost-role-information-wolf-name
     description: ghost-role-information-wolf-description
     rules: Вы - волк. Охотьтесь на живность, исследуйте мир.
-  - type: WolfToDog
+  - type: Pet
   - type: UserInterface
     interfaces:
-      enum.WolfToDogOfferUiKey.Key:
-        type: WolfToDogOfferUI
+      enum.PetOfferUiKey.Key:
+        type: PetOfferUI
 
 - type: entity
   name: rabbit

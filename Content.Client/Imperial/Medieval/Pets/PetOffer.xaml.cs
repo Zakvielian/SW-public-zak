@@ -5,12 +5,12 @@ using Robust.Client.UserInterface.XAML;
 namespace Content.Client.Imperial.Medieval.Dogs;
 
 [GenerateTypedNameReferences]
-public sealed partial class WolfToDogOffer : DefaultWindow
+public sealed partial class PetOffer : DefaultWindow
 {
     public event Action? OnApplyPressed;
     public event Action? OnRejectPressed;
 
-    public WolfToDogOffer()
+    public PetOffer()
     {
         RobustXamlLoader.Load(this);
 

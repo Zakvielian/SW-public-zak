@@ -3,11 +3,11 @@ using Robust.Client.GameObjects;
 
 namespace Content.Client.Imperial.Medieval.Dogs;
 
-public sealed class WolfToDogOfferUI : BoundUserInterface
+public sealed class PetOfferUI : BoundUserInterface
 {
-    private WolfToDogOffer? _window;
+    private PetOffer? _window;
 
-    public WolfToDogOfferUI(EntityUid owner, Enum uiKey) : base(owner, uiKey)
+    public PetOfferUI(EntityUid owner, Enum uiKey) : base(owner, uiKey)
     {
     }
 
@@ -15,17 +15,17 @@ public sealed class WolfToDogOfferUI : BoundUserInterface
     {
         base.Open();
 
-        _window = new WolfToDogOffer();
+        _window = new PetOffer();
         _window.OnClose += Close;
 
         _window.OnApplyPressed += () =>
         {
-            SendMessage(new WolfToDogOfferMessage(true));
+            SendMessage(new PetOfferMessage(true));
         };
 
         _window.OnRejectPressed += () =>
         {
-            SendMessage(new WolfToDogOfferMessage(false));
+            SendMessage(new PetOfferMessage(false));
         };
 
         _window.OpenCentered();
