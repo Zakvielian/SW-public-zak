@@ -40,5 +40,11 @@ namespace Content.Server.BadSmell.Components
 
         [DataField]
         public bool IsDirtyVisible = true;
+
+        [DataField]
+        public float BadSmellItemMod = 1f;
+
+        [DataField]
+        public float BadSmellItemMod = 1f;
     }
 }

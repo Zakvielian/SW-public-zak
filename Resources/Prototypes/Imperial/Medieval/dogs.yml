@@ -1,14 +1,17 @@
 - type: entity
   parent:
-    - SimpleMobBaseNoFood
-  id: MedievalMobDog
+    - BaseSimpleMob
+    - MobCombat
+    - MobAtmosExposed
+  id: MedievalMobBaseDog
+  abstract: true
   components:
   - type: Sprite
     drawdepth: Mobs
-    sprite: Imperial/Medieval/Mobs/dogs.rsi
+    sprite: Imperial/Medieval/Mobs/dogs/borzoi_0.rsi
     layers:
     - map: [ "enum.DamageStateVisualLayers.Base" ]
-      state: borzoi_0
+      state: alive
   - type: Physics
   - type: Sharp
   - type: PassiveDamage
@@ -38,9 +41,11 @@
   - type: DamageStateVisuals
     states:
       Alive:
-        Base: borzoi_0
+        Base: alive
+      Critical:
+        Base: dead
       Dead:
-        Base: borzoi_0_dead
+        Base: dead
   - type: Butcherable
     spawned:
     - id: FoodMeat
@@ -53,7 +58,7 @@
     bloodMaxVolume: 40
     bloodlossDamage:
       types:
-        Bloodloss: 1
+        Bloodloss: 0.75
     bloodlossHealDamage:
       types:
         Bloodloss: -1
@@ -68,7 +73,7 @@
     animation: WeaponArcBite
     damage:
       groups:
-        Brute: 10.4
+        Brute: 12
       types:
         ParryAble: 1
   - type: Puller
@@ -117,6 +122,84 @@
   - type: ComplexInteraction
   - type: TypingIndicator
     proto: wolf
+  - type: BadSmellFeel
+  - type: BadSmellVision
+    smellThreshold: 50.0
+    radius: 8
+  - type: Tag
+    tags:
+    - CannotSuicide
+    - DoorBumpOpener
+    - FootstepSound
+    - Animal #Этот тег убирает из колеса эмоций мобов "человеческие" эмоции (чихание, свист и т.д)
+  - type: StatusEffects
+    allowed:
+    - Electrocution
+    - TemporaryBlindness
+    - Pacified
+    - StaminaModifier
+    - Flashed
+    - RadiationProtection
+    - Adrenaline
+  - type: Perishable
+  - type: Body
+    prototype: Animal
+  - type: Hunger
+    thresholds: # only animals and rats are derived from this prototype so let's override it here and in rats' proto
+      Overfed: 100
+      Okay: 50
+      Peckish: 25
+      Starving: 10
+      Dead: 0
+    baseDecayRate: 0.00925925925926 # it is okay for animals to eat and drink less than humans, but more frequently
+  - type: Thirst
+    thresholds:
+      OverHydrated: 200
+      Okay: 150
+      Thirsty: 100
+      Parched: 50
+      Dead: 0
+    baseDecayRate: 0.04
+
+- type: entity
+  parent: MedievalMobBaseDog
+  id: MedievalMobDogBorzoi0
+  components:
+  - type: Sprite
+    drawdepth: Mobs
+    sprite: Imperial/Medieval/Mobs/dogs/borzoi_0.rsi
+
+- type: entity
+  parent: MedievalMobBaseDog
+  id: MedievalMobDogBorzoi1
+  components:
+  - type: Sprite
+    drawdepth: Mobs
+    sprite: Imperial/Medieval/Mobs/dogs/borzoi_1.rsi
+
+- type: entity
+  parent: MedievalMobBaseDog
+  id: MedievalMobDogBorzoi2
+  components:
+  - type: Sprite
+    drawdepth: Mobs
+    sprite: Imperial/Medieval/Mobs/dogs/borzoi_2.rsi
+
+- type: entity
+  parent: MedievalMobBaseDog
+  id: MedievalMobDogBorzoi3
+  components:
+  - type: Sprite
+    drawdepth: Mobs
+    sprite: Imperial/Medieval/Mobs/dogs/borzoi_3.rsi
+
+- type: entity
+  parent: MedievalMobBaseDog
+  id: MedievalMobDogBorzoi4
+  components:
+  - type: Sprite
+    drawdepth: Mobs
+    sprite: Imperial/Medieval/Mobs/dogs/borzoi_4.rsi
 
 - type: soundCollection
   id: DogBarkCollection

@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "size":
+  {
+    "x": 32,
+    "y": 32
+  },
+  "license": "this content is under ICLA licence, read more on https://wiki.imperialspace.net/icla",
+  "copyright": "by @Fichty bq",
+  "states":
+  [
+    {
+      "name": "alive",
+      "directions": 4
+    },
+
+    {
+      "name": "dead",
+      "directions": 1
+    }
+  ]
+}

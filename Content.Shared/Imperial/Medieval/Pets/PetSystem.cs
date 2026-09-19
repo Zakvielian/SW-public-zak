@@ -1,17 +1,21 @@
 using Content.Shared.DoAfter;
 using Content.Shared.Interaction;
 using Content.Shared.Mind;
+using Content.Shared.Popups;
 using Robust.Shared.Network;
 using Robust.Shared.Player;
+using Robust.Shared.Random;
 
 namespace Content.Shared.Imperial.Medieval.Dogs;
 
-public partial class PetSystem : EntitySystem
+public sealed partial class PetSystem : EntitySystem
 {
     [Dependency] private readonly SharedDoAfterSystem _doAfter = default!;
     [Dependency] private readonly SharedUserInterfaceSystem _ui = default!;
     [Dependency] private readonly INetManager _net = default!;
     [Dependency] private readonly SharedMindSystem _mindSystem = default!;
+    [Dependency] private readonly SharedPopupSystem _popup = default!;
+    [Dependency] private IRobustRandom _random = default!;
 
     public override void Initialize()
     {
@@ -85,12 +89,14 @@ public partial class PetSystem : EntitySystem
         if (args.Accepted && collar != null && Exists(collar.Value))
             OnAccepted(ent, collar.Value);
         else
-            OnRejected(ent, collar);
+            OnDeny(ent, collar);
     }
 
-    protected virtual void OnAccepted(Entity<TameTargetComponent> ent, EntityUid collar)
+    private void OnAccepted(Entity<TameTargetComponent> ent, EntityUid collar)
     {
-        var dog = SpawnAtPosition(ent.Comp.DogProtoId, Transform(ent).Coordinates);
+        var selectedProto = _random.Pick(ent.Comp.PetsProtoId);
+
+        var dog = SpawnAtPosition(selectedProto, Transform(ent).Coordinates);
 
         if (_mindSystem.TryGetMind(dog, out var oldMindId, out var oldMind))
             _mindSystem.TransferTo(oldMindId, null, mind: oldMind);
@@ -99,10 +105,12 @@ public partial class PetSystem : EntitySystem
             _mindSystem.TransferTo(targetMindId, dog, mind: targetMind);
 
         QueueDel(ent);
+
+        _popup.PopupCursor(Loc.GetString("popup-pet-offer-accepted"), PopupType.Medium);
     }
 
-    protected virtual void OnRejected(Entity<TameTargetComponent> wolf, EntityUid? collar)
+    private void OnDeny(Entity<TameTargetComponent> wolf, EntityUid? collar)
     {
-
+        _popup.PopupCursor(Loc.GetString("popup-pet-offer-deny"), PopupType.Medium);
     }
 }

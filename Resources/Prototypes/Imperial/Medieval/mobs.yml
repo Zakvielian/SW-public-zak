@@ -443,6 +443,17 @@
   - type: Speech
   - type: TypingIndicator
     proto: wolf
+  - type: TameTarget
+    petsProtoId:
+      - MedievalMobDogBorzoi0
+      - MedievalMobDogBorzoi1
+      - MedievalMobDogBorzoi2
+      - MedievalMobDogBorzoi3
+      - MedievalMobDogBorzoi4
+  - type: UserInterface
+    interfaces:
+      enum.PetOfferUiKey.Key:
+        type: PetOfferUI
 
 - type: typingIndicator
   id: wolf
@@ -462,11 +473,6 @@
     name: ghost-role-information-wolf-name
     description: ghost-role-information-wolf-description
     rules: Вы - волк. Охотьтесь на живность, исследуйте мир.
-  - type: Pet
-  - type: UserInterface
-    interfaces:
-      enum.PetOfferUiKey.Key:
-        type: PetOfferUI
 
 - type: entity
   name: rabbit
