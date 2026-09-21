@@ -5,4 +5,8 @@ public sealed class BadSmellBeforeExamineEvent : EntityEventArgs
 {
     public bool Cancelled { get; set; }
     public List<string> Scents { get; } = new();
+
+    public EntityUid Examiner { get; }
+
+    public EntityUid Examined { get; }
 }
