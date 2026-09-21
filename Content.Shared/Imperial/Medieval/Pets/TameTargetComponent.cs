@@ -8,8 +8,9 @@ namespace Content.Shared.Imperial.Medieval.Dogs;
 [RegisterComponent, NetworkedComponent]
 public sealed partial class TameTargetComponent : Component
 {
+
     [DataField]
-    public EntityUid? PendingCollar = null;
+    public EntityUid? PetOwner;
 
     [DataField]
     public List<string> PetsProtoId = new();

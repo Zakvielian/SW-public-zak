@@ -66,10 +66,10 @@ public sealed partial class PetSystem : EntitySystem
 
         if (_net.IsServer)
         {
-            if (!HasComp<ActorComponent>(ent.Owner))
-                return;
+            // if (!HasComp<ActorComponent>(ent.Owner))
+            //     return;
 
-            ent.Comp.PendingCollar = collarUid;
+            ent.Comp.PetOwner = args.User;
             _ui.TryOpenUi(ent.Owner, PetOfferUiKey.Key, ent.Owner);
         }
 
@@ -81,18 +81,18 @@ public sealed partial class PetSystem : EntitySystem
         if (!_net.IsServer)
             return;
 
+        if (ent.Comp.PetOwner is not { } petOwner)
+            return;
+
         _ui.CloseUi(ent.Owner, PetOfferUiKey.Key, args.Actor);
 
-        var collar = ent.Comp.PendingCollar;
-        ent.Comp.PendingCollar = null;
-
-        if (args.Accepted && collar != null && Exists(collar.Value))
-            OnAccepted(ent, collar.Value);
+        if (args.Accepted)
+            OnAccepted(ent, petOwner);
         else
-            OnDeny(ent, collar);
+            OnDeny(ent, petOwner);
     }
 
-    private void OnAccepted(Entity<TameTargetComponent> ent, EntityUid collar)
+    private void OnAccepted(Entity<TameTargetComponent> ent, EntityUid petOwner)
     {
         var selectedProto = _random.Pick(ent.Comp.PetsProtoId);
 
@@ -106,11 +106,11 @@ public sealed partial class PetSystem : EntitySystem
 
         QueueDel(ent);
 
-        _popup.PopupCursor(Loc.GetString("popup-pet-offer-accepted"), PopupType.Medium);
+        _popup.PopupClient(Loc.GetString("popup-pet-offer-accepted"), petOwner, PopupType.Medium);
     }
 
-    private void OnDeny(Entity<TameTargetComponent> wolf, EntityUid? collar)
+    private void OnDeny(Entity<TameTargetComponent> wolf, EntityUid petOwner)
     {
-        _popup.PopupCursor(Loc.GetString("popup-pet-offer-deny"), PopupType.Medium);
+        _popup.PopupCursor(Loc.GetString("popup-pet-offer-deny"), petOwner, PopupType.Medium);
     }
 }

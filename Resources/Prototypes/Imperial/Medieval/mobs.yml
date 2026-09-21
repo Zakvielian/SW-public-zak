@@ -450,6 +450,10 @@
       - MedievalMobDogBorzoi2
       - MedievalMobDogBorzoi3
       - MedievalMobDogBorzoi4
+      - MedievalMobDog1
+      - MedievalMobDog2
+      - MedievalMobDog3
+      - MedievalMobDog4
   - type: UserInterface
     interfaces:
       enum.PetOfferUiKey.Key:
