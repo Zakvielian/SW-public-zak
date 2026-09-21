@@ -14,6 +14,7 @@ using Robust.Server.GameObjects;
 using Robust.Shared.Map.Components;
 using Content.Shared.Maps;
 using Content.Shared.Clothing.Components;
+using Content.Shared.Imperial.Medieval.Perfume;
 
 namespace Content.Server.BadSmell
 {
@@ -85,6 +86,12 @@ namespace Content.Server.BadSmell
             _alerts.ShowAlert(component.Owner, component.SmellAlert, alertLevel);
             if (TryComp<BadSmellRaceModifierComponent>(uid, out var race))
                 component.GrowTemp *= race.Modifier;
+
+            var strength = _random.Pick(Enum.GetValues<SmellStrength>());
+            var smellBase = _random.Pick(Enum.GetValues<SmellBase>());
+            var modifier = _random.Pick(Enum.GetValues<SmellModifier>());
+
+            component.Profile = new SmellProfile(strength, smellBase, modifier);
         }
 
         private void OnClear(EntityUid uid, BadSmelClearComponent component, ComponentStartup args)
@@ -119,8 +126,26 @@ namespace Content.Server.BadSmell
                 args.PushMarkup(Loc.GetString("bad-smell-level-heavy"));
             else if (component.SmellLevel < 25f)
                 args.PushMarkup(Loc.GetString("bad-smell-level-fresh"));
+
+            if (!TryComp<BadSmellItemFeelComponent>(args.Examiner, out var badSmellItemFeel))
+                return;
+
+            if (TryComp<PerfumeTargetComponent>(args.Examined, out var _))
+                return;
+
+            if (component.SmellLevel < badSmellItemFeel.Sensivity)
+                return;
+
+            var hex = component.Profile.GetColor().ToHex();
+            var smellText = component.Profile.ToFormattedString();
+
+            var msg = Loc.GetString("smell-examined",
+                ("color", hex),
+                ("smell", smellText));
+
+            args.PushMarkup(msg);
         }
-        
+
         TimeSpan StartTime = TimeSpan.FromSeconds(0f);
         TimeSpan EndTime = TimeSpan.FromSeconds(0f);
         TimeSpan ReloadTime = TimeSpan.FromSeconds(25f);

@@ -1,7 +1,10 @@
+using System.ComponentModel;
 using Content.Server.BadSmell;
 using Content.Server.BadSmell.Components;
 using Content.Shared.Examine;
+using Content.Shared.Hands;
 using Content.Shared.Imperial.Medieval.BadSmell;
+using Content.Shared.Imperial.Medieval.Perfume;
 using Content.Shared.Interaction;
 using Content.Shared.Item;
 using Content.Shared.StepTrigger.Systems;
@@ -22,21 +25,23 @@ public sealed class BadSmellItemSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<BadSmellComponent, InteractHandEvent>(OnInteractHand);
+        SubscribeLocalEvent<BadSmellComponent, DidEquipHandEvent>(OnItemEquipped);
         SubscribeLocalEvent<BadSmellItemComponent, ExaminedEvent>(OnExamineItem);
     }
 
-    private void OnInteractHand(Entity<BadSmellComponent> ent, ref InteractHandEvent args)
+    private void OnItemEquipped(Entity<BadSmellComponent> ent, ref DidEquipHandEvent args)
     {
-        if (!TryComp<ItemComponent>(args.Target, out _))
+        if (!TryComp<ItemComponent>(args.Equipped, out _))
             return;
 
-        if (ent.Comp.SmellLevel < 60)
+        if (ent.Comp.SmellLevel < 30)
             return;
 
-        var badSmellItem = EnsureComp<BadSmellItemComponent>(args.Target);
+        var badSmellItem = EnsureComp<BadSmellItemComponent>(args.Equipped);
 
         var newTime = _timing.CurTime + TimeSpan.FromSeconds(ent.Comp.SmellLevel * ent.Comp.BadSmellItemMod);
+
+        badSmellItem.SmellProfile = ent.Comp.Profile;
 
         if (args.User != badSmellItem.Toucher)
         {
@@ -61,6 +66,16 @@ public sealed class BadSmellItemSystem : EntitySystem
             return;
         }
 
+        if (ent.Comp.Toucher is not { } toucher || !Exists(toucher) || ent.Comp.SmellProfile is not { } profile)
+            return;
 
+        var hex = profile.GetColor().ToHex();
+        var smellText = profile.ToFormattedString();
+
+        var msg = Loc.GetString("smell-examined",
+            ("color", hex),
+            ("smell", smellText));
+
+        args.PushMarkup(msg);
     }
 }
