@@ -69,7 +69,8 @@ public sealed partial class PetSystem : EntitySystem
             // if (!HasComp<ActorComponent>(ent.Owner))
             //     return;
 
-            ent.Comp.PetOwner = args.User;
+            ent.Comp.PetOwnerUid = args.User;
+            ent.Comp.CollarUid = args.Used;
             _ui.TryOpenUi(ent.Owner, PetOfferUiKey.Key, ent.Owner);
         }
 
@@ -81,7 +82,10 @@ public sealed partial class PetSystem : EntitySystem
         if (!_net.IsServer)
             return;
 
-        if (ent.Comp.PetOwner is not { } petOwner)
+        if (ent.Comp.PetOwnerUid is not { } petOwner)
+            return;
+
+        if (ent.Comp.CollarUid is not { } collarUid || !Exists(collarUid))
             return;
 
         _ui.CloseUi(ent.Owner, PetOfferUiKey.Key, args.Actor);
@@ -104,6 +108,7 @@ public sealed partial class PetSystem : EntitySystem
         if (_mindSystem.TryGetMind(ent, out var targetMindId, out var targetMind))
             _mindSystem.TransferTo(targetMindId, dog, mind: targetMind);
 
+        QueueDel(ent.Comp.CollarUid);
         QueueDel(ent);
 
         _popup.PopupClient(Loc.GetString("popup-pet-offer-accepted"), petOwner, PopupType.Medium);

@@ -76,7 +76,7 @@ smell-modifier-musty = затхлый
 smell-modifier-pungent = едкий
 smell-modifier-floral = цветочный
 smell-modifier-spicy = пряный
-smell-modifier-chemical = химический
+smell-modifier-chemical = алхимический
 
 # Экшен
 action-track-bad-smell-name = Искать по запаху

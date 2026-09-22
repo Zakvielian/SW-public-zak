@@ -143,6 +143,7 @@
     - RadiationProtection
     - Adrenaline
   - type: Perishable
+  - type: BadSmellItemTracker
   - type: Body
     prototype: Animal
   - type: Hunger
@@ -256,16 +257,22 @@
     state: icon
   - type: PetCollar
 
-# - type: entity
-#   id: ActionBadSmellItemTracker
-#   name: action-track-bad-smell-name
-#   description: action-track-bad-smell-desc
-#   components:
-#   - type: Action
-#     icon: { sprite: Interface/Actions/jump.rsi, state: icon }
-#     useDelay: 5
-#     checkCanInteract: true
-#   - type: TargetAction
-#     range: 2.0
-#   - type: EntityTargetAction
-#     event: !type:BadSmellItemTrackerActionEvent
+- type: entity
+  id: ActionBadSmellItemTracker
+  components:
+    - type: Action
+      itemIconStyle: BigAction
+      useDelay: 45
+      icon:
+        sprite: /Textures/Imperial/Lavaland/Mobs/Urs.rsi
+        state: DashActionIcon
+    - type: TargetAction
+      range: 1.5
+      interactOnMiss: false
+      targetingIndicator: true
+      deselectOnMiss: true
+      repeat: false
+      checkCanAccess: false
+    - type: EntityTargetAction
+      canTargetSelf: false
+      event: !type:BadSmellItemTrackerActionEvent
