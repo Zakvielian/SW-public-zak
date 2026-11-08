@@ -12,6 +12,8 @@
     layers:
     - map: [ "enum.DamageStateVisualLayers.Base" ]
       state: alive
+    - map: [ "outerClothing" ]
+    - map: [ "back" ]
   - type: Physics
   - type: Sharp
   - type: BadSmellItemFeel
@@ -162,6 +164,15 @@
       Parched: 50
       Dead: 0
     baseDecayRate: 0.04
+  - type: Inventory
+    templateId: MedievalDogInventory
+  - type: InventorySlots
+  - type: Strippable
+  - type: UserInterface
+    interfaces:
+      enum.StrippingUiKey.Key:
+        type: StrippableBoundUserInterface
+
 
 - type: entity
   parent: MedievalMobBaseDog
@@ -262,10 +273,11 @@
   components:
     - type: Action
       itemIconStyle: BigAction
+      priority: 3
       useDelay: 45
       icon:
-        sprite: /Textures/Imperial/Lavaland/Mobs/Urs.rsi
-        state: DashActionIcon
+        sprite: /Textures/Imperial/Medieval/BadSmell/actions.rsi
+        state: ZakisMyDog
     - type: TargetAction
       range: 1.5
       interactOnMiss: false
@@ -276,3 +288,218 @@
     - type: EntityTargetAction
       canTargetSelf: false
       event: !type:BadSmellItemTrackerActionEvent
+
+- type: inventoryTemplate
+  id: MedievalDogInventory
+  slots:
+    - name: outerClothing
+      slotTexture: suit
+      slotFlags: OUTERCLOTHING
+      stripTime: 6
+      uiWindowPos: 0, 0
+      strippingWindowPos: 0, 0
+      displayName: Suit
+      whitelist:
+        tags:
+        - DogEquipment
+    - name: back
+      slotTexture: back
+      slotFlags: BACK
+      stripTime: 6
+      uiWindowPos: 1, 0
+      strippingWindowPos: 1, 0
+      displayName: Back
+      whitelist:
+        tags:
+        - DogEquipment
+
+- type: Tag
+  id: DogEquipment
+
+- type: entity
+  parent: ClothingOuterBase
+  id: MedievalClothingOuterArmorChainDog
+  components:
+  - type: RDWeight
+    value: 1.5
+  - type: Sprite
+    sprite: Imperial/Medieval/Mobs/dogs/armor/chainOUTERCLOTHING.rsi
+  - type: Clothing
+    equipDelay: 1.5
+    unequipDelay: 3.5
+    sprite: Imperial/Medieval/Mobs/dogs/armor/chainOUTERCLOTHING.rsi
+  - type: Armor
+    modifiers:
+      coefficients:
+        Blunt: 0.68
+        Slash: 0.75
+        Piercing: 0.5
+        Heat: 0.5
+        Cold: 0.5
+  - type: MedievalArmorIntegrity
+    containerArmorHP: 150
+    repairType: Smithing
+    unbrokenExplosionResistance:
+      damageCoefficient: 0.2
+    brokenExplosionResistance:
+      damageCoefficient: 0.85
+    unbrokenResistances:
+      Blunt:
+        coefficient: 0.2
+      Slash:
+        coefficient: 0.1
+      Piercing:
+        coefficient: 0.3
+      Heat:
+        coefficient: 0.3
+    brokenResistances:
+      Blunt:
+        coefficient: 0.9
+      Slash:
+        coefficient: 0.9
+      Piercing:
+        coefficient: 0.9
+      Heat:
+        coefficient: 0.9
+    breakageMultipliers:
+      Piercing: 1
+      Blunt: 1.2
+      Slash: 0.8
+      Heat: 1
+  - type: StaminaResistance
+    damageCoefficient: 0.5
+  - type: Item
+    size: Normal
+  - type: ExplosionResistance
+    damageCoefficient: 0.4
+  - type: MedievalIronHitSound
+    effectSoundOnHit: "/Audio/Imperial/Medieval/chainmail_hit.ogg"
+  - type: Tag
+    tags:
+    - DogEquipment
+
+- type: entity
+  parent: ClothingOuterBase
+  id: MedievalClothingOuterArmorLeatherDog
+  components:
+  - type: RDWeight
+    value: 1
+  - type: Sprite
+    sprite: Imperial/Medieval/Mobs/dogs/armor/leatherOUTERCLOTHING.rsi
+  - type: Clothing
+    equipDelay: 1.5
+    unequipDelay: 3.5
+    sprite: Imperial/Medieval/Mobs/dogs/armor/leatherOUTERCLOTHING.rsi
+  - type: Armor
+    modifiers:
+      coefficients:
+        Blunt: 0.78
+        Slash: 0.65
+        Piercing: 0.5
+        Heat: 0.7
+        Cold: 0.7
+  - type: MedievalArmorIntegrity
+    containerArmorHP: 225
+    repairType: Sewing
+    unbrokenExplosionResistance:
+      damageCoefficient: 0.15
+    brokenExplosionResistance:
+      damageCoefficient: 0.85
+    unbrokenResistances:
+      Blunt:
+        coefficient: 0.05
+      Slash:
+        coefficient: 0.12
+      Piercing:
+        coefficient: 0.27
+      Heat:
+        coefficient: 0.27
+    brokenResistances:
+      Blunt:
+        coefficient: 0.9
+      Slash:
+        coefficient: 0.9
+      Piercing:
+        coefficient: 0.9
+      Heat:
+        coefficient: 0.9
+    breakageMultipliers:
+      Piercing: 1
+      Blunt: 0.8
+      Slash: 1.25
+      Heat: 1
+    breakSound:
+      path: /Audio/Imperial/Medieval/Armor/integrity_break_leather.ogg
+      params:
+        variation: 0.2
+  - type: StaminaResistance
+    damageCoefficient: 0.5
+  - type: Item
+    size: Normal
+  - type: ExplosionResistance
+    damageCoefficient: 0.65
+  - type: Tag
+    tags:
+    - DogEquipment
+
+- type: entity
+  parent: ClothingOuterBase
+  id: MedievalClothingOuterArmorForstoneDog
+  components:
+  - type: RDWeight
+    value: 2.5
+  - type: Sprite
+    sprite: Imperial/Medieval/Mobs/dogs/armor/forstoneOUTERCLOTHING.rsi
+  - type: Clothing
+    equipDelay: 1.5
+    unequipDelay: 3.5
+    sprite: Imperial/Medieval/Mobs/dogs/armor/forstoneOUTERCLOTHING.rsi
+  - type: Armor
+    modifiers:
+      coefficients:
+        Blunt: 0.78
+        Slash: 0.90
+        Piercing: 0.75
+        Heat: 0.75
+        Cold: 0.75
+  - type: MedievalArmorIntegrity
+    containerArmorHP: 285
+    repairType: Smithing
+    unbrokenExplosionResistance:
+      damageCoefficient: 0.2
+    brokenExplosionResistance:
+      damageCoefficient: 0.85
+    unbrokenResistances:
+      Blunt:
+        coefficient: 0.2
+      Slash:
+        coefficient: 0.1
+      Piercing:
+        coefficient: 0.3
+      Heat:
+        coefficient: 0.3
+    brokenResistances:
+      Blunt:
+        coefficient: 0.9
+      Slash:
+        coefficient: 0.9
+      Piercing:
+        coefficient: 0.9
+      Heat:
+        coefficient: 0.9
+    breakageMultipliers:
+      Piercing: 1
+      Blunt: 1.2
+      Slash: 0.8
+      Heat: 1
+  - type: StaminaResistance
+    damageCoefficient: 0.75
+  - type: Item
+    size: Normal
+  - type: ExplosionResistance
+    damageCoefficient: 0.75
+  - type: MedievalIronHitSound
+    effectSoundOnHit: "/Audio/Imperial/Medieval/chainmail_hit.ogg"
+  - type: Tag
+    tags:
+    - DogEquipment

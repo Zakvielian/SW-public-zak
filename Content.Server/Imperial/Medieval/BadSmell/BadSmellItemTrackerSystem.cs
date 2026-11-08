@@ -1,9 +1,12 @@
+using System.Numerics;
 using Content.Server.Actions;
 using Content.Server.BadSmell.Components;
 using Content.Shared.Actions;
 using Content.Shared.Imperial.Medieval.BadSmell;
 using Content.Shared.Imperial.Medieval.Perfume;
 using Content.Shared.Popups;
+using Robust.Shared.Maths;
+using Robust.Shared.Player;
 using Robust.Shared.Timing;
 
 namespace Content.Server.Imperial.Medieval.BadSmell;
@@ -22,7 +25,6 @@ public sealed class BadSmellItemTrackerSystem : EntitySystem
 
         SubscribeLocalEvent<BadSmellItemTrackerComponent, MapInitEvent>(OnMapInit);
         SubscribeLocalEvent<BadSmellItemTrackerComponent, ComponentShutdown>(OnShutdown);
-
         SubscribeLocalEvent<BadSmellItemTrackerComponent, BadSmellItemTrackerActionEvent>(OnTrackAction);
     }
 
@@ -62,34 +64,83 @@ public sealed class BadSmellItemTrackerSystem : EntitySystem
             return;
         }
 
-        if (smellItem.Toucher is not { } targetEnt || !Exists(targetEnt) || TryComp<PerfumeTargetComponent>(targetEnt, out _))
+        var targetProfile = smellItem.SmellProfile;
+        if (targetProfile == null && smellItem.Toucher is { } toucher && TryComp<BadSmellComponent>(toucher, out var toucherSmell))
+        {
+            targetProfile = toucherSmell.Profile;
+        }
+
+        if (targetProfile == null)
         {
             _popup.PopupEntity(Loc.GetString("bad-smell-track-target-lost"), performer, performer, PopupType.SmallCaution);
             return;
         }
 
         var performerXform = Transform(performer);
-        var targetXform = Transform(targetEnt);
-
-        if (performerXform.GridUid == null || performerXform.GridUid != targetXform.GridUid)
+        if (performerXform.GridUid is not { } gridUid)
         {
-            _popup.PopupEntity(Loc.GetString("bad-smell-track-different-grid"), performer, performer, PopupType.SmallCaution);
+            _popup.PopupEntity(Loc.GetString("bad-smell-track-no-grid"), performer, performer, PopupType.SmallCaution);
             return;
         }
 
         var performerPos = _transform.GetWorldPosition(performerXform);
-        var targetPos = _transform.GetWorldPosition(targetXform);
-        var diff = targetPos - performerPos;
-        var distance = MathF.Round(diff.Length());
+        EntityUid? closestTarget = null;
+        var closestDistSq = float.MaxValue;
+        var closestDiff = Vector2.Zero;
+        var sourceProfile = targetProfile.Value;
 
-        var direction = diff.GetDir();
-        var dirKey = $"bad-smell-dir-{direction.ToString().ToLowerInvariant()}";
+        var query = EntityQueryEnumerator<BadSmellComponent, TransformComponent>();
+        while (query.MoveNext(out var candidateUid, out var candidateSmell, out var candidateXform))
+        {
+            if (candidateUid == performer)
+                continue;
 
-        _popup.PopupEntity(Loc.GetString("bad-smell-track-success",
-            ("dir", Loc.GetString(dirKey)),
-            ("dist", distance)),
+            if (candidateXform.GridUid != gridUid)
+                continue;
+
+            if (!IsMatchingSmell(sourceProfile, candidateSmell.Profile))
+                continue;
+
+            if (HasComp<PerfumeTargetComponent>(candidateUid))
+                continue;
+
+            var candidatePos = _transform.GetWorldPosition(candidateXform);
+            var diff = candidatePos - performerPos;
+            var distSq = diff.LengthSquared();
+
+            if (distSq < closestDistSq)
+            {
+                closestDistSq = distSq;
+                closestTarget = candidateUid;
+                closestDiff = diff;
+            }
+        }
+
+        if (closestTarget == null)
+        {
+            _popup.PopupEntity(Loc.GetString("bad-smell-track-no-target-found"), performer, performer, PopupType.SmallCaution);
+            return;
+        }
+
+        // Send network event with NetCoordinates and scent color to the client
+        var targetCoords = GetNetCoordinates(Transform(closestTarget.Value).Coordinates);
+        var scentColor = sourceProfile.GetColor();
+        RaiseNetworkEvent(new BadSmellTrackEvent(targetCoords, scentColor), performer);
+
+        var distance = (int) MathF.Round(MathF.Sqrt(closestDistSq));
+        _popup.PopupEntity(Loc.GetString("bad-smell-track-success-scent", ("dist", distance)),
             performer, performer, PopupType.Medium);
 
         args.Handled = true;
+
+        args.Handled = true;
+    }
+
+    /// <summary>
+    /// Checks if candidate smell matches source scent profile.
+    /// </summary>
+    private static bool IsMatchingSmell(SmellProfile source, SmellProfile candidate)
+    {
+        return source.Base == candidate.Base && source.Modifier == candidate.Modifier;
     }
 }
