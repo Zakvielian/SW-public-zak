@@ -3,8 +3,9 @@
   id: MedievalWerewolves
   components:
   - type: GameRule
-    minPlayers: 30
+    minPlayers: 0
   - type: LycantropyGameRule
+  - type: MedievalLycantropyRule
   - type: AntagSelection
     selectionTime: IntraPlayerSpawn
     definitions:

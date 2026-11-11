@@ -3,6 +3,7 @@ using Content.Shared.Chemistry.Reagent;
 using Content.Shared.DoAfter;
 using Content.Shared.Examine;
 using Content.Shared.IdentityManagement;
+using Content.Shared.Imperial.Medieval.Lycantropy;
 using Content.Shared.Imperial.Medieval.Plague;
 using Content.Shared.Interaction;
 using Content.Shared.Movement.Components;
@@ -169,6 +170,9 @@ public sealed partial class MedievalPlagueSystem
             realResult = infected.Incubation ? BloodlettingResult.InfectedIncub : BloodlettingResult.Infected;
         else
             realResult = BloodlettingResult.Healthy;
+
+        if (HasComp<LycantropyComponent>(args.Target))
+            realResult = BloodlettingResult.Infected;
 
         var prob = _random.NextFloat(1f);
         var cach = 0f;

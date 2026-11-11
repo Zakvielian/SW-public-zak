@@ -1,6 +1,7 @@
 using Content.Shared.Damage;
 using Robust.Shared.GameStates;
 using Robust.Shared.Audio;
+using Content.Shared.Whitelist;
 
 namespace Content.Shared.MedievalMeleeResource.Components;
 
@@ -170,4 +171,9 @@ public sealed partial class MedievalMeleeResourceComponent : Component
     };
 
 
+    [DataField, AutoNetworkedField]
+    public EntityWhitelist? SafeTargetWhitelist;
+
+     [DataField, AutoNetworkedField]
+    public float WrongTargetMultiplier = 1f;
 }

@@ -3,9 +3,11 @@ using Content.Shared.Damage.Events;
 using Content.Shared.Damage.Systems;
 using Content.Shared.Imperial.Dash;
 using Content.Shared.Movement.Systems;
+using Content.Shared.Verbs;
 using Robust.Shared.Physics.Events;
 using Robust.Shared.Serialization;
 using Robust.Shared.Timing;
+using Robust.Shared.Utility;
 
 namespace Content.Shared.Imperial.Medieval.Lycantropy;
 
@@ -31,6 +33,8 @@ public abstract partial class SharedLycantropySystem : EntitySystem
         SubscribeLocalEvent<WerewolfBloodHuntComponent, CheckDashCooldownModifiersEvent>(OnBloodHuntDashDelay);
         SubscribeLocalEvent<WerewolfShadowDashComponent, StartCollideEvent>(OnSDashCollide);
         SubscribeLocalEvent<WerewolfShadowDashComponent, DashEndedEvent>(OnSDashEnded);
+
+        SubscribeLocalEvent<LycantropyComponent, GetVerbsEvent<Verb>>(AddLycanVerb);
     }
 
     private void RefreshMoveSpeed(EntityUid uid, Component comp, EntityEventArgs args)
@@ -70,6 +74,25 @@ public abstract partial class SharedLycantropySystem : EntitySystem
     private void OnSDashEnded(EntityUid uid, WerewolfShadowDashComponent comp, ref DashEndedEvent args)
     {
         RemComp(uid, comp);
+    }
+
+    private void AddLycanVerb(Entity<LycantropyComponent> ent, ref GetVerbsEvent<Verb> args)
+    {
+        if (args.User != ent.Owner)
+            return;
+
+        Verb verb = new()
+        {
+            Text = ent.Comp.ShareLycanIcon ? Loc.GetString("lycantropy-verb-unshare-icon") : Loc.GetString("lycantropy-verb-share-icon"),
+            Icon = new SpriteSpecifier.Texture(new("/Textures/Imperial/Medieval/Interface/Werewolf/status_icon.rsi/werewolf.png")),
+            Act = () =>
+            {
+                ent.Comp.ShareLycanIcon = !ent.Comp.ShareLycanIcon;
+                Dirty(ent);
+            }
+        };
+
+        args.Verbs.Add(verb);
     }
 }
 

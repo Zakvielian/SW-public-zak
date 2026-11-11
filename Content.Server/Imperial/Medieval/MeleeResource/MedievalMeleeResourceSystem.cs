@@ -8,6 +8,7 @@ using Content.Shared.Interaction;
 using Content.Shared.MedievalMeleeResource.Components;
 using Content.Shared.Weapons.Melee;
 using Content.Shared.Weapons.Melee.Events;
+using Content.Shared.Whitelist;
 using Content.Shared.Wieldable.Components;
 using Robust.Server.Player;
 using Robust.Shared.Audio.Systems;
@@ -21,6 +22,7 @@ public sealed class MedievalMeleeResourceSystem : EntitySystem
     [Dependency] private readonly SharedAudioSystem _audioSystem = default!;
     [Dependency] private readonly SharedDoAfterSystem _doAfterSystem = default!;
     [Dependency] private readonly IPlayerManager _playerManager = default!;
+    [Dependency] private readonly EntityWhitelistSystem _whitelistSystem = default!;
 
     public override void Initialize()
     {
@@ -318,13 +320,28 @@ public sealed class MedievalMeleeResourceSystem : EntitySystem
 
     public float CheckBadTarget(EntityUid uid, MedievalMeleeResourceComponent component, MeleeHitEvent args)
     {
+        var maxMultiplier = 1.0f;
+
         foreach (var hit in args.HitEntities)
         {
+            var multiplier = 1.0f;
+
+            if (component.SafeTargetWhitelist != null &&
+                !_whitelistSystem.IsValid(component.SafeTargetWhitelist, hit))
+            {
+                multiplier = component.WrongTargetMultiplier;
+            }
+
             if (TryComp<MedievalMeleeBadTargetComponent>(hit, out var target) &&
                 target.SafeToHitGroup != component.SafeToHitGroup)
-                return target.BreakMultiplier;
+            {
+                multiplier = MathF.Max(multiplier, target.BreakMultiplier);
+            }
+
+            if (multiplier > maxMultiplier)
+                maxMultiplier = multiplier;
         }
 
-        return 1.0f;
+        return maxMultiplier;
     }
 }

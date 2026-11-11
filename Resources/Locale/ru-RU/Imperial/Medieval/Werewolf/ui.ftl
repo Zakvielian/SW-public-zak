@@ -12,3 +12,6 @@ round-end-lycantropy-werewolf-count-summary = Всего было [color=crimson
 round-end-lycantropy-werewolf-summary = [color=crimson]- { $name }[/color]
 
 guide-entry-werewolf = Оборотни
+
+lycantropy-verb-share-icon = Раскрыть себя зараженным
+lycantropy-verb-unshare-icon = Скрыть себя зараженным

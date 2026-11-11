@@ -7,7 +7,9 @@ using Content.Server.Chat.Managers;
 using Content.Server.Chat.Systems;
 using Content.Server.GameTicking;
 using Content.Server.Imperial.DayTime;
+using Content.Server.Imperial.Medieval.BadSmell;
 using Content.Server.Imperial.Medieval.GameTicking.Rules;
+using Content.Server.Imperial.Medieval.Tracker;
 using Content.Server.Jittering;
 using Content.Server.Mind;
 using Content.Server.Polymorph.Components;
@@ -19,10 +21,12 @@ using Content.Shared.Actions.Components;
 using Content.Shared.Administration;
 using Content.Shared.Chat;
 using Content.Shared.Damage;
+using Content.Shared.FixedPoint;
 using Content.Shared.GameTicking;
 using Content.Shared.Humanoid;
 using Content.Shared.IdentityManagement;
 using Content.Shared.Imperial.Dash;
+using Content.Shared.Imperial.Medieval.BadSmell;
 using Content.Shared.Imperial.Medieval.CCVar;
 using Content.Shared.Imperial.Medieval.Lycantropy;
 using Content.Shared.Imperial.Medieval.Plague;
@@ -71,21 +75,14 @@ public sealed partial class LycantropySystem : SharedLycantropySystem
     [Dependency] private readonly MindSystem _mind = default!;
     [Dependency] private readonly RoleSystem _role = default!;
     [Dependency] private readonly GameTicker _gameTicker = default!;
+    [Dependency] private readonly TargetTrackerSystem _targetTracker = default!;
 
-    private const int PointsPerNight = 3;
+    private const int PointsPerNight = 0;
     private const int PointsPerInfect = 4;
     private const int PointsPerCrit = 1;
+    private const float PointsRewardRadius = 15f;
 
-    private DamageSpecifier _regenAmount = new()
-    {
-        DamageDict = new()
-        {
-            { "Brute", -1.5f },
-            { "Slash", -1.5f },
-            { "Piercing", -1.5f },
-            { "Burn", -1.5f },
-        }
-    };
+    private FixedPoint2 _regenAmount = 3f;
 
     public override void Initialize()
     {
@@ -161,11 +158,11 @@ public sealed partial class LycantropySystem : SharedLycantropySystem
 
     private void OnWerewolfPolymorph(EntityUid uid, LycantropyComponent comp, PolymorphWerewolfActionEvent args)
     {
-        if (comp.Points < 2)
-        {
-            _popup.PopupEntity(Loc.GetString("popup-werewolf-polymorph-fail-cost"), uid, uid);
-            return;
-        }
+        // if (comp.Points < 2)
+        // {
+        //     _popup.PopupEntity(Loc.GetString("popup-werewolf-polymorph-fail-cost"), uid, uid);
+        //     return;
+        // }
 
         Morph(uid, comp);
     }
@@ -174,10 +171,25 @@ public sealed partial class LycantropySystem : SharedLycantropySystem
     {
         if (args.NewMobState == MobState.Alive)
         {
-            if (TryComp<PolymorphedEntityComponent>(comp.Werewolf, out var polymorphed) && TryComp<LycantropyComponent>(polymorphed.Parent, out var lycantropy))
+            var xform = Transform(uid);
+            var nearbyEntities = _lookup.GetEntitiesInRange(xform.Coordinates, PointsRewardRadius);
+
+            foreach (var entity in nearbyEntities)
             {
-                lycantropy.Points += PointsPerInfect;
-                Dirty(polymorphed.Parent.Value, lycantropy);
+                if (TryComp<LycantropyComponent>(entity, out var lycantropy) && uid != entity)
+                {
+                    lycantropy.Points += PointsPerInfect;
+                    Dirty(entity, lycantropy);
+                    continue;
+                }
+
+                if (TryComp<PolymorphedEntityComponent>(entity, out var polymorphed) &&
+                    polymorphed.Parent != null &&
+                    TryComp<LycantropyComponent>(polymorphed.Parent.Value, out var parentLycantropy))
+                {
+                    parentLycantropy.Points += PointsPerInfect;
+                    Dirty(polymorphed.Parent.Value, parentLycantropy);
+                }
             }
 
             if (_mind.TryGetMind(uid, out var mindId, out var mind))
@@ -218,6 +230,30 @@ public sealed partial class LycantropySystem : SharedLycantropySystem
         var xform = Transform(uid);
         var filter = Filter.BroadcastMap(xform.MapID).RemoveInRange(xform.MapPosition, 16f, EntityManager);
         _audio.PlayGlobal(_audio.ResolveSound(new SoundPathSpecifier("/Audio/Imperial/Medieval/Werewolf/howl-far.ogg")), filter, false);
+
+        if (xform.GridUid is not { } gridUid)
+            return;
+
+        var arrowColor = Color.Crimson;
+        var trackDuration = TimeSpan.FromSeconds(5);
+
+        var wolfQuery = EntityQueryEnumerator<WerewolfComponent, TransformComponent>();
+        while (wolfQuery.MoveNext(out var targetUid, out _, out var targetXform))
+        {
+            if (targetUid == uid || targetXform.GridUid != gridUid)
+                continue;
+
+            _targetTracker.StartTrackingEntity(targetUid, uid, trackDuration, arrowColor);
+        }
+
+        var humanQuery = EntityQueryEnumerator<LycantropyComponent, TransformComponent>();
+        while (humanQuery.MoveNext(out var targetUid, out _, out var targetXform))
+        {
+            if (targetUid == uid || targetXform.GridUid != gridUid)
+                continue;
+
+            _targetTracker.StartTrackingEntity(targetUid, uid, trackDuration, arrowColor);
+        }
     }
 
     private void OnWerewolfInfect(EntityUid uid, WerewolfComponent comp, ToggleLycantropyInfectActionEvent args)
@@ -286,7 +322,7 @@ public sealed partial class LycantropySystem : SharedLycantropySystem
 
         _audio.PlayPvs(args.Sound, uid);
 
-        foreach (var item in _lookup.GetEntitiesInRange<WerewolfComponent>(Transform(uid).Coordinates, 5.5f))
+        foreach (var item in _lookup.GetEntitiesInRange<WerewolfComponent>(Transform(uid).Coordinates, 7f))
         {
             if (item.Owner == uid)
                 continue;
@@ -302,20 +338,60 @@ public sealed partial class LycantropySystem : SharedLycantropySystem
 
         args.Handled = true;
 
-        var damage = new DamageSpecifier()
-        {
-            DamageDict = new()
-            {
-            { "Brute", -20f },
-            { "Slash", -20f },
-            { "Piercing", -20f },
-            { "Burn", -15f },
-            }
-        };
-
         _audio.PlayPvs(args.Sound, uid);
-        _damage.TryChangeDamage(uid, damage, true);
+        HealTotalDamage(uid, 50);
         _jitter.DoJitter(uid, TimeSpan.FromSeconds(3), true);
+    }
+
+    public void HealTotalDamage(EntityUid uid, FixedPoint2 healAmount, DamageableComponent? damageable = null)
+    {
+        if (healAmount <= FixedPoint2.Zero)
+            return;
+
+        if (!Resolve(uid, ref damageable))
+            return;
+
+        var currentDamage = damageable.Damage;
+        var totalCurrentDamage = currentDamage.GetTotal();
+
+        if (totalCurrentDamage <= FixedPoint2.Zero)
+            return;
+
+        var healSpec = new DamageSpecifier();
+
+        if (healAmount >= totalCurrentDamage)
+        {
+            foreach (var (type, amount) in currentDamage.DamageDict)
+            {
+                if (amount > FixedPoint2.Zero)
+                    healSpec.DamageDict.Add(type, -amount);
+            }
+        }
+        else
+        {
+            var remainingHeal = healAmount;
+            var remainingDamage = totalCurrentDamage;
+
+            foreach (var (type, amount) in currentDamage.DamageDict)
+            {
+                if (amount <= FixedPoint2.Zero)
+                    continue;
+
+                var healForType = FixedPoint2.Min(amount, remainingHeal * amount / remainingDamage);
+
+                if (healForType > FixedPoint2.Zero)
+                {
+                    healSpec.DamageDict.Add(type, -healForType);
+                    remainingHeal -= healForType;
+                    remainingDamage -= amount;
+                }
+            }
+        }
+
+        if (healSpec.DamageDict.Count > 0)
+        {
+            _damage.TryChangeDamage(uid, healSpec);
+        }
     }
 
     private void OnStatusEffect(EntityUid uid, WerewolfComponent comp, WerewolfStatusEffectActionEvent args)
@@ -480,7 +556,7 @@ public sealed partial class LycantropySystem : SharedLycantropySystem
         }
     }
 
-    private void Morph(EntityUid uid, LycantropyComponent comp)
+    public void Morph(EntityUid uid, LycantropyComponent comp)
     {
         var abilities = comp.Abilities;
         _audio.PlayGlobal(new SoundCollectionSpecifier("WerewolfTransform"), uid);
@@ -536,7 +612,7 @@ public sealed partial class LycantropySystem : SharedLycantropySystem
                 continue;
 
             comp.NextUpdate = _timing.CurTime + TimeSpan.FromSeconds(1);
-            _damage.TryChangeDamage(uid, _regenAmount, true);
+            HealTotalDamage(uid, _regenAmount);
         }
 
         var wolfQuery = EntityQueryEnumerator<WerewolfComponent>();
@@ -571,7 +647,7 @@ public sealed partial class LycantropySystem : SharedLycantropySystem
         var infectedQuery = EntityQueryEnumerator<LycantropyInfectedComponent>();
         while (infectedQuery.MoveNext(out var uid, out var comp))
         {
-            _damage.TryChangeDamage(uid, _regenAmount);
+            HealTotalDamage(uid, _regenAmount);
             _blood.TryModifyBleedAmount(uid, -1);
         }
     }

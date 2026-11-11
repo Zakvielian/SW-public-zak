@@ -29,3 +29,16 @@
       state: moon
   name: Лунная ярость
   description: Вы игнорируете весь входящий стамина-урон.
+
+- type: alert
+  id: MedievalWerewolfTransformation
+  icons:
+    - sprite: /Textures/Imperial/Medieval/Interface/Werewolf/status_effects.rsi
+      state: moon # 0 - Дневная стадия (если нет спрайта sun, оставьте moon)
+    - sprite: /Textures/Imperial/Medieval/Interface/Werewolf/status_effects.rsi
+      state: moon # 1 - Ночная стадия
+  minSeverity: 0
+  maxSeverity: 1
+  name: alerts-medieval-werewolf-transformation-name
+  description: alerts-medieval-werewolf-transformation-desc
+  clickEvent: !type:WerewolfTransformAlertEvent

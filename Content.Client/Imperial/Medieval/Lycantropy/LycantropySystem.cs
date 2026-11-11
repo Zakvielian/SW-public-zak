@@ -74,6 +74,9 @@ public sealed partial class LycantropySystem : SharedLycantropySystem
 
     private void OnGetLycantropyIcon(EntityUid uid, LycantropyComponent comp, ref GetStatusIconsEvent args)
     {
+        if (!comp.ShareLycanIcon && !TryComp<WerewolfComponent>(_player.LocalEntity, out _))
+            return;
+
         var proto = _proto.Index<FactionIconPrototype>("MedievalLycantropy");
 
         args.StatusIcons.Add(proto);

@@ -2267,7 +2267,7 @@
     wideAnimation: CP14WeaponArcSlash
     cPSwingBeverage: true
     cPAnimationOffset: 1
-    clickDamageModifier: 0.6 
+    clickDamageModifier: 0.6
     wideAnimationRotation: -140
     attackRate: 0.5
     range: 1.85 # higher range to accomodate for ping differences with wide swinging
@@ -5819,6 +5819,11 @@
   - type: Meltable
     resourceCount: 2
     resourceName: MedievalIngotSilver
+  - type: MedievalMeleeResource
+    wrongTargetMultiplier: 10
+    safeTargetWhitelist:
+      components:
+      - Werewolf
 
 - type: entity
   name: dagger
@@ -5846,6 +5851,11 @@
   - type: Meltable
     resourceCount: 1
     resourceName: MedievalIngotSilver
+  - type: MedievalMeleeResource
+    wrongTargetMultiplier: 10
+    safeTargetWhitelist:
+      components:
+      - Werewolf
 
 - type: entity
   name: medieval spear
@@ -5865,6 +5875,11 @@
   - type: Meltable
     resourceCount: 3
     resourceName: MedievalIngotSilver
+  - type: MedievalMeleeResource
+    wrongTargetMultiplier: 10
+    safeTargetWhitelist:
+      components:
+      - Werewolf
 
 - type: entity
   name: dagger
@@ -5894,6 +5909,11 @@
   - type: Meltable
     resourceCount: 3
     resourceName: MedievalIngotSilver
+  - type: MedievalMeleeResource
+    wrongTargetMultiplier: 10
+    safeTargetWhitelist:
+      components:
+      - Werewolf
 
 - type: entity
   name: iron claymore
@@ -5921,3 +5941,8 @@
   - type: Meltable
     resourceCount: 6
     resourceName: MedievalIngotSilver
+  - type: MedievalMeleeResource
+    wrongTargetMultiplier: 10
+    safeTargetWhitelist:
+      components:
+      - Werewolf

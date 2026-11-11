@@ -21,7 +21,7 @@
     duration: 10
     damage:
       types:
-        Piercing: 12
+        Piercing: 1
   - type: Appearance
   - type: GenericVisualizer
     visuals:

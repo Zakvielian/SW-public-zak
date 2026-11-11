@@ -34,4 +34,7 @@ public sealed partial class LycantropyComponent : Component
 
     [ViewVariables(VVAccess.ReadWrite)]
     public int NightsSpent = 0;
+
+    [ViewVariables(VVAccess.ReadWrite)]
+    public bool ShareLycanIcon = false;
 }
