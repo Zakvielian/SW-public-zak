@@ -36,9 +36,6 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
     [Dependency] private readonly IRobustRandom _random = default!;
 
     private static readonly ProtoId<AlertPrototype> AlertMoon = "MedievalWerewolfTransformation";
-    private static readonly ProtoId<CalendarEventPrototype> BloomEventId = "CalendarEventLycantropyBloom";
-    private static readonly EntProtoId BloomFlowerProto = "MedievalLycantropyBloomFlower";
-    private const string DungeonFlowerMarkerId = "LycantropyFlowerDungeon";
 
     public const int NightStartStage = 5;
     public const int NightEndStage = 10;
@@ -75,35 +72,6 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
         SubscribeLocalEvent<WerewolfComponent, ComponentStartup>(OnWolfStartup);
         SubscribeLocalEvent<WerewolfComponent, ComponentShutdown>(OnWolfShutdown);
         SubscribeLocalEvent<WerewolfComponent, WerewolfTransformAlertEvent>(OnWolfAlertClicked);
-
-        SubscribeLocalEvent<CalendarEventStartedEvent>(OnCalendarEventStarted);
-    }
-
-    private void OnCalendarEventStarted(CalendarEventStartedEvent args)
-    {
-        if (args.EventId != BloomEventId)
-            return;
-
-        var spawners = new List<EntityCoordinates>();
-
-        var spawnerQuery = EntityQueryEnumerator<LycantropyFlowerSpawnerComponent, TransformComponent>();
-        while (spawnerQuery.MoveNext(out _, out _, out var xform))
-        {
-            spawners.Add(xform.Coordinates);
-        }
-
-        var markerQuery = EntityQueryEnumerator<CalendarSpawnMarkerComponent, TransformComponent>();
-        while (markerQuery.MoveNext(out _, out var marker, out var xform))
-        {
-            if (string.Equals(marker.MarkerId, DungeonFlowerMarkerId, StringComparison.OrdinalIgnoreCase))
-                spawners.Add(xform.Coordinates);
-        }
-
-        if (spawners.Count == 0)
-            return;
-
-        var chosenCoords = _random.Pick(spawners);
-        Spawn(BloomFlowerProto, chosenCoords);
     }
 
     private void OnRoundStart(RoundStartedEvent args)

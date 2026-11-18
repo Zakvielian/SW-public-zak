@@ -47,8 +47,8 @@
   description: Таинственный цветок, распускающийся в глухих подземельях. Содержит 5 унций редкого нектара.
   components:
   - type: Sprite
-    sprite: Imperial/Medieval/Objects/Specific/Alchemy/moon_flower.rsi
-    state: icon
+    sprite: Imperial/Medieval/Chem/Garden/black.rsi
+    state: produce
   - type: Food
   - type: SolutionContainerManager
     solutions:
@@ -59,3 +59,10 @@
           Quantity: 5
   - type: Extractable
     grindableSolutionName: food
+
+- type: entity
+  id: BloomFlowerSpawnMarker
+  parent: SimpleMarker
+  components:
+  - type: CalendarSpawnMarker
+    markerId: LycantropyBloomFlower

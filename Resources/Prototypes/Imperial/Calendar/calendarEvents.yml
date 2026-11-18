@@ -109,6 +109,9 @@
   weight: 10.0
   minDay: 2
   maxOccurrences: 4
+  spawns:
+    MedievalLycantropyBloomFlower:
+      - marker: LycantropyBloomFlower
   tags:
     - Day
     - werewolves
