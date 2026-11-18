@@ -34,11 +34,19 @@
   id: MedievalWerewolfTransformation
   icons:
     - sprite: /Textures/Imperial/Medieval/Interface/Werewolf/status_effects.rsi
-      state: moon # 0 - Дневная стадия (если нет спрайта sun, оставьте moon)
+      state: moon # 0 - Дневная стадия. Надо заменить на что-то подходящее??
     - sprite: /Textures/Imperial/Medieval/Interface/Werewolf/status_effects.rsi
-      state: moon # 1 - Ночная стадия
+      state: moon # 1 - Ночная стадия. Надо заменить на что-то подходящее??
   minSeverity: 0
   maxSeverity: 1
   name: alerts-medieval-werewolf-transformation-name
   description: alerts-medieval-werewolf-transformation-desc
   clickEvent: !type:WerewolfTransformAlertEvent
+
+- type: alert
+  id: MedievalLycantropyRevealSight
+  icons:
+    - sprite: /Textures/Imperial/Medieval/Interface/Werewolf/status_effects.rsi
+      state: moon # Заменить на что-то подходящее
+  name: alerts-medieval-lycantropy-reveal-sight-name
+  description: alerts-medieval-lycantropy-reveal-sight-name

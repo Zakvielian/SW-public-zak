@@ -5,6 +5,9 @@
   - type: GameRule
     minPlayers: 0
   - type: LycantropyGameRule
+  - type: CalendarRuleTags
+    tags:
+    - werewolves
   - type: MedievalLycantropyRule
   - type: AntagSelection
     selectionTime: IntraPlayerSpawn

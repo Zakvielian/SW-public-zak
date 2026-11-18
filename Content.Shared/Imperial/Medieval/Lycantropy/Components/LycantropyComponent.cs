@@ -1,3 +1,4 @@
+using Content.Shared.FixedPoint;
 using Content.Shared.Polymorph;
 using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
@@ -10,6 +11,9 @@ public sealed partial class LycantropyComponent : Component
     [ViewVariables(VVAccess.ReadWrite)]
     [AutoNetworkedField]
     public int Points = 0;
+
+    [ViewVariables(VVAccess.ReadWrite)]
+    public FixedPoint2 PartialPoints = FixedPoint2.Zero;
 
     [AutoNetworkedField]
     public List<ProtoId<LycantropyAbilityPrototype>> Abilities = new();
@@ -36,5 +40,6 @@ public sealed partial class LycantropyComponent : Component
     public int NightsSpent = 0;
 
     [ViewVariables(VVAccess.ReadWrite)]
+    [AutoNetworkedField]
     public bool ShareLycanIcon = false;
 }

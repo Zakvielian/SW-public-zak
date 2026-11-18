@@ -36,6 +36,7 @@ public sealed class CalendarBoardSystem : EntitySystem
         SubscribeLocalEvent<CalendarBoardComponent, BoundUIOpenedEvent>(OnUIOpened);
         SubscribeLocalEvent<DayCycleFinishedEvent>(OnDayCycleFinished);
         SubscribeLocalEvent<CalendarEventStartedEvent>(OnCalendarEventStarted);
+        SubscribeLocalEvent<CalendarDecksGeneratedEvent>(OnCalendarDecksGenerated);
 
         SubscribeLocalEvent<CalendarBoardComponent, CalendarBoardCreateAnnouncementMessage>(OnCreateAnnouncement);
         SubscribeLocalEvent<CalendarBoardComponent, CalendarBoardDeleteAnnouncementMessage>(OnDeleteAnnouncement);
@@ -44,6 +45,11 @@ public sealed class CalendarBoardSystem : EntitySystem
     private void OnRoundRestartCleanup(RoundRestartCleanupEvent args)
     {
         Announcements.Clear();
+    }
+
+    private void OnCalendarDecksGenerated(CalendarDecksGeneratedEvent args)
+    {
+        UpdateAllBoards();
     }
 
     private void OnCalendarEventStarted(CalendarEventStartedEvent args)

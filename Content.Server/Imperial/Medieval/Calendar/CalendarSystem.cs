@@ -1,7 +1,9 @@
 using Content.Server.Administration;
+using Content.Server.GameTicking;
 using Content.Server.Imperial.DayTime;
 using Content.Shared.Administration;
 using Content.Shared.GameTicking;
+using Content.Shared.GameTicking.Components;
 using Robust.Shared.Console;
 using Robust.Shared.Map;
 using Robust.Shared.Player;
@@ -17,6 +19,7 @@ public sealed class CalendarSystem : EntitySystem
     [Dependency] private readonly IPrototypeManager _prototype = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
     [Dependency] private readonly ISharedPlayerManager _playerManager = default!;
+    [Dependency] private readonly GameTicker _gameTicker = default!;
 
     public const int DayStageNumber = 1;
     public const int NightStageNumber = 6;
@@ -27,28 +30,111 @@ public sealed class CalendarSystem : EntitySystem
     public const int TargetDaysCount = 12;
 
     private int _curCycle;
+    private bool _decksInitialized;
+
     private readonly List<ProtoId<CalendarEventPrototype>> _dayDeck = new();
     private readonly List<ProtoId<CalendarEventPrototype>> _nightDeck = new();
 
+    /// <summary>
+    /// Все теги, зарегистрированные в правилах игры (отделяет теги режимов от общих тегов вроде TradeEvent).
+    /// </summary>
+    private readonly HashSet<string> _knownModeTags = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Теги игровых режимов, активные в текущем раунде.
+    /// </summary>
+    private readonly HashSet<string> _activeModeTags = new(StringComparer.OrdinalIgnoreCase);
+
     public IReadOnlyList<ProtoId<CalendarEventPrototype>> DayDeck => _dayDeck;
     public IReadOnlyList<ProtoId<CalendarEventPrototype>> NightDeck => _nightDeck;
+    public IReadOnlySet<string> ActiveModeTags => _activeModeTags;
     public int CurrentCycle => _curCycle;
 
     public override void Initialize()
     {
         base.Initialize();
 
+        RebuildKnownModeTags();
+
+        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypesReloaded);
+        SubscribeLocalEvent<RoundRestartCleanupEvent>(OnRoundRestartCleanup);
         SubscribeLocalEvent<DayCycleStageChangedEvent>(OnDayCycleChanged);
         SubscribeLocalEvent<RoundStartedEvent>(OnRoundStart);
         SubscribeLocalEvent<CalendarEventStartedEvent>(OnCalendarEventStarted);
         SubscribeLocalEvent<DayCycleFinishedEvent>(OnNewDayCycle);
+        SubscribeLocalEvent<CalendarRuleTagsComponent, GameRuleStartedEvent>(OnCalendarRuleStarted);
+    }
+
+    private void OnPrototypesReloaded(PrototypesReloadedEventArgs args)
+    {
+        if (args.WasModified<EntityPrototype>())
+            RebuildKnownModeTags();
+    }
+
+    private void RebuildKnownModeTags()
+    {
+        _knownModeTags.Clear();
+
+        foreach (var entProto in _prototype.EnumeratePrototypes<EntityPrototype>())
+        {
+            if (!entProto.TryGetComponent<CalendarRuleTagsComponent>(out var ruleTags, EntityManager.ComponentFactory))
+                continue;
+
+            foreach (var tag in ruleTags.Tags)
+            {
+                _knownModeTags.Add(tag);
+            }
+        }
+    }
+
+    private void OnRoundRestartCleanup(RoundRestartCleanupEvent args)
+    {
+        _curCycle = 0;
+        _decksInitialized = false;
+        _activeModeTags.Clear();
+        _dayDeck.Clear();
+        _nightDeck.Clear();
+    }
+
+    private void OnCalendarRuleStarted(EntityUid uid, CalendarRuleTagsComponent comp, ref GameRuleStartedEvent args)
+    {
+        if (comp.Tags.Count == 0)
+            return;
+
+        var addedAny = false;
+        foreach (var tag in comp.Tags)
+        {
+            _knownModeTags.Add(tag);
+            if (_activeModeTags.Add(tag))
+                addedAny = true;
+        }
+
+        if (addedAny && _decksInitialized)
+            RegenerateRemainingDecks();
+    }
+
+    public bool HasActiveModeTag(string tag)
+    {
+        return _activeModeTags.Contains(tag);
+    }
+
+    public void AddModeTag(string tag, bool regenerateDecks = true)
+    {
+        _knownModeTags.Add(tag);
+        if (_activeModeTags.Add(tag) && regenerateDecks && _decksInitialized)
+            RegenerateRemainingDecks();
+    }
+
+    public void RemoveModeTag(string tag, bool regenerateDecks = true)
+    {
+        if (_activeModeTags.Remove(tag) && regenerateDecks && _decksInitialized)
+            RegenerateRemainingDecks();
     }
 
     private void OnCalendarEventStarted(CalendarEventStartedEvent args)
     {
         if (args.Prototype.Spawns == null || args.Prototype.Spawns.Count == 0)
             return;
-
 
         var markerToSpawns = new Dictionary<string, List<(EntProtoId Proto, int Amount)>>(StringComparer.OrdinalIgnoreCase);
 
@@ -108,12 +194,54 @@ public sealed class CalendarSystem : EntitySystem
             TriggerDayStageNotification("DefaultCalendarEvent");
     }
 
+    private void CollectActiveModeTags()
+    {
+        _activeModeTags.Clear();
+
+        var ruleQuery = EntityQueryEnumerator<CalendarRuleTagsComponent, GameRuleComponent>();
+        while (ruleQuery.MoveNext(out var uid, out var ruleTags, out var gameRule))
+        {
+            if (!_gameTicker.IsGameRuleActive(uid, gameRule))
+                continue;
+
+            foreach (var tag in ruleTags.Tags)
+            {
+                _knownModeTags.Add(tag);
+                _activeModeTags.Add(tag);
+            }
+        }
+
+        var collectEv = new CollectCalendarModeTagsEvent(_activeModeTags);
+        RaiseLocalEvent(collectEv);
+
+        foreach (var tag in collectEv.Tags)
+        {
+            _knownModeTags.Add(tag);
+        }
+    }
+
     private void InitializeCalendarDecks()
     {
-        GenerateDeck(_dayDeck, DayTag, "DefaultCalendarEvent");
-        GenerateDeck(_nightDeck, NightTag, "DefaultCalendarNightEvent");
+        CollectActiveModeTags();
+
+        GenerateDeck(_dayDeck, 0, DayTag, "DefaultCalendarEvent");
+        GenerateDeck(_nightDeck, 0, NightTag, "DefaultCalendarNightEvent");
+        _decksInitialized = true;
 
         // Модифицировать колоду календаря можно после этого ивента
+        RaiseLocalEvent(new CalendarDecksGeneratedEvent());
+    }
+
+    private void RegenerateRemainingDecks()
+    {
+        // Текущий день уже объявлен при старте цикла, поэтому перегенерируем со следующего дня,
+        // а ночи — начиная с текущего цикла (если ночь ещё не наступила) или следующего.
+        var dayStartIndex = Math.Clamp(_curCycle + 1, 0, TargetDaysCount);
+        var nightStartIndex = Math.Clamp(_curCycle, 0, TargetDaysCount);
+
+        GenerateDeck(_dayDeck, dayStartIndex, DayTag, "DefaultCalendarEvent");
+        GenerateDeck(_nightDeck, nightStartIndex, NightTag, "DefaultCalendarNightEvent");
+
         RaiseLocalEvent(new CalendarDecksGeneratedEvent());
     }
 
@@ -139,9 +267,42 @@ public sealed class CalendarSystem : EntitySystem
         }
     }
 
-    private void GenerateDeck(List<ProtoId<CalendarEventPrototype>> deck, string filterTag, string fallbackEventId)
+    private bool IsEventAllowedForCurrentModes(CalendarEventPrototype proto)
     {
-        deck.Clear();
+        if (proto.ExcludedTags.Count > 0 && _activeModeTags.Overlaps(proto.ExcludedTags))
+            return false;
+
+        var hasModeTag = false;
+        var matchesActiveMode = false;
+
+        foreach (var tag in proto.Tags)
+        {
+            if (!_knownModeTags.Contains(tag))
+                continue;
+
+            hasModeTag = true;
+            if (_activeModeTags.Contains(tag))
+            {
+                matchesActiveMode = true;
+                break;
+            }
+        }
+
+        // Общие события (без тегов режимов) доступны всегда; события с тегом режима — только при его активности.
+        return !hasModeTag || matchesActiveMode;
+    }
+
+    private void GenerateDeck(List<ProtoId<CalendarEventPrototype>> deck, int startIndex, string filterTag, string fallbackEventId)
+    {
+        if (startIndex <= 0)
+        {
+            deck.Clear();
+            startIndex = 0;
+        }
+        else if (deck.Count > startIndex)
+        {
+            deck.RemoveRange(startIndex, deck.Count - startIndex);
+        }
 
         var pool = new List<CalendarEventPrototype>();
         var playerCount = _playerManager.PlayerCount;
@@ -151,7 +312,8 @@ public sealed class CalendarSystem : EntitySystem
             if (proto.Tags.Contains(filterTag) &&
                 proto.Weight > 0f &&
                 playerCount >= proto.MinPlayers &&
-                playerCount <= proto.MaxPlayers)
+                playerCount <= proto.MaxPlayers &&
+                IsEventAllowedForCurrentModes(proto))
             {
                 pool.Add(proto);
             }
@@ -159,7 +321,7 @@ public sealed class CalendarSystem : EntitySystem
 
         if (pool.Count == 0)
         {
-            for (var day = 1; day <= TargetDaysCount; day++)
+            for (var day = startIndex + 1; day <= TargetDaysCount; day++)
             {
                 deck.Add(fallbackEventId);
             }
@@ -169,7 +331,15 @@ public sealed class CalendarSystem : EntitySystem
         var counts = new Dictionary<string, int>(pool.Count);
         var lastOccurrence = new Dictionary<string, int>(pool.Count);
 
-        for (var day = 1; day <= TargetDaysCount; day++)
+        // Учитываем уже зафиксированные дни (если идёт перегенерация середины колоды)
+        for (var i = 0; i < deck.Count; i++)
+        {
+            var existingId = deck[i].Id;
+            counts[existingId] = counts.GetValueOrDefault(existingId) + 1;
+            lastOccurrence[existingId] = i + 1;
+        }
+
+        for (var day = startIndex + 1; day <= TargetDaysCount; day++)
         {
             var candidates = pool.FindAll(p =>
                 p.MinDay <= day &&
@@ -270,7 +440,6 @@ public sealed class CalendarSystem : EntitySystem
         RaiseLocalEvent(new CalendarEventStartedEvent(_curCycle, id, proto));
     }
 }
-
 
 [AdminCommand(AdminFlags.VarEdit)]
 public sealed class TriggerNextDayCycleCommand : IConsoleCommand

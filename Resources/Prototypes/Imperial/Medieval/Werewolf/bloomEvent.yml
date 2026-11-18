@@ -1,0 +1,61 @@
+# Жидкость цветка: 1 унция = 1 очко ликантропу
+- type: reagent
+  id: MedievalFlowerLycanBloom
+  name: reagent-name-medieval-flower-lycan-bloom
+  desc: reagent-desc-medieval-flower-lycan-bloom
+  physicalDesc: reagent-physical-desc-glowing
+  color: "#7b2cbf"
+  metabolisms:
+    Food:
+      metabolismRate: 1.0
+      effects:
+      - !type:GrantLycantropyPoints
+        pointsPerUnit: 1
+
+# Готовое зелье обнаружения ликантропов
+- type: reagent
+  id: medievallycanreveal
+  name: reagent-name-medieval-lycan-reveal
+  desc: reagent-desc-medieval-lycan-reveal
+  physicalDesc: reagent-physical-desc-glowing
+  color: "#c77dff"
+  metabolisms:
+    Drink:
+      effects:
+      - !type:GrantLycantropyRevealSight
+
+# Рецепт в recipes.yml (требует 5 унций сока цветка — ровно 1 цветок)
+- type: alchemyRecipe
+  id: Alchemymedievallycanreveal
+  parent: BaseAlchemyRecipeT1
+  ingredients:
+  - reagent: MedievalFlowerLycanBloom
+    amount: 5
+  - reagent: AlchemyLight
+    amount: 2
+  steps:
+  - operation: Heat
+  - operation: Stir
+  products:
+    medievallycanreveal: 7
+
+# Сам цветок (содержит 5 унций жидкости MedievalFlowerLycanBloom)
+- type: entity
+  id: MedievalLycantropyBloomFlower
+  parent: BaseItem
+  name: редкий лунный цветок
+  description: Таинственный цветок, распускающийся в глухих подземельях. Содержит 5 унций редкого нектара.
+  components:
+  - type: Sprite
+    sprite: Imperial/Medieval/Objects/Specific/Alchemy/moon_flower.rsi
+    state: icon
+  - type: Food
+  - type: SolutionContainerManager
+    solutions:
+      food:
+        maxVol: 5
+        reagents:
+        - ReagentId: MedievalFlowerLycanBloom
+          Quantity: 5
+  - type: Extractable
+    grindableSolutionName: food

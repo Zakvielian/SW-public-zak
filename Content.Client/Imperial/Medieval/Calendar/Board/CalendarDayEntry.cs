@@ -34,7 +34,8 @@ public sealed class CalendarDayEntry : PanelContainer
         };
         vBox.AddChild(dayLabel);
 
-        if (prototypeManager.TryIndex<CalendarEventPrototype>(eventId, out var proto))
+        CalendarEventPrototype? proto = null;
+        if (!string.IsNullOrEmpty(eventId) && prototypeManager.TryIndex(eventId, out proto))
         {
             var nameLabel = new Label
             {
@@ -66,11 +67,13 @@ public sealed class CalendarDayEntry : PanelContainer
 
         AddChild(vBox);
 
+        var defaultBgColor = isCurrentDay ? Color.FromHex("#334433") : Color.FromHex("#222222");
+
         PanelOverride = new StyleBoxFlat
         {
-            BackgroundColor = isCurrentDay ? Color.FromHex("#334433") : Color.FromHex("#222222"),
+            BackgroundColor = proto?.BackgroundColor ?? defaultBgColor,
             BorderColor = isCurrentDay ? Color.LimeGreen : Color.DarkGray,
-            BorderThickness = new Thickness(1)
+            BorderThickness = new Thickness(isCurrentDay ? 2 : 1)
         };
     }
 }

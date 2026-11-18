@@ -11,12 +11,15 @@ using Content.Shared.DayTime;
 using Content.Shared.GameTicking;
 using Content.Shared.GameTicking.Components;
 using Content.Shared.Imperial.DayTime;
+using Content.Shared.Imperial.Medieval.Calendar;
 using Content.Shared.Imperial.Medieval.CCVar;
 using Content.Shared.Imperial.Medieval.Lycantropy;
 using Content.Shared.Mobs.Systems;
 using Robust.Shared.Configuration;
+using Robust.Shared.Map;
 using Robust.Shared.Maths;
 using Robust.Shared.Prototypes;
+using Robust.Shared.Random;
 using Robust.Shared.Timing;
 
 namespace Content.Server.Imperial.Medieval.GameTicking.Rules;
@@ -30,16 +33,18 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
     [Dependency] private readonly IPrototypeManager _proto = default!;
     [Dependency] private readonly MobStateSystem _mobState = default!;
     [Dependency] private readonly AlertsSystem _alerts = default!;
+    [Dependency] private readonly IRobustRandom _random = default!;
 
     private static readonly ProtoId<AlertPrototype> AlertMoon = "MedievalWerewolfTransformation";
+    private static readonly ProtoId<CalendarEventPrototype> BloomEventId = "CalendarEventLycantropyBloom";
+    private static readonly EntProtoId BloomFlowerProto = "MedievalLycantropyBloomFlower";
+    private const string DungeonFlowerMarkerId = "LycantropyFlowerDungeon";
 
-    // Индексы стадий в DayTimeComponent (0-based: стадия 5 = начало ночи, стадия 10 = рассвет/конец ночи)
     public const int NightStartStage = 5;
     public const int NightEndStage = 10;
     public const string DefaultDayTimeGroup = "0";
     public const string BloodMoonPresetId = "bloody";
 
-    // Градации (severity) алерта: 0 - День, 1 - Ночь
     private const short AlertSeverityDay = 0;
     private const short AlertSeverityNight = 1;
 
@@ -49,7 +54,6 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
     private int _currentStage = 0;
     private TimeSpan? _endTime = null;
 
-    // Внутренний таймер текущей фазы (Дня или Ночи)
     private TimeSpan _phaseStartTime = TimeSpan.Zero;
     private TimeSpan _phaseEndTime = TimeSpan.Zero;
 
@@ -64,15 +68,42 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
         SubscribeLocalEvent<RoundStartedEvent>(OnRoundStart);
         SubscribeLocalEvent<RoundEndedEvent>(OnRoundEnd);
 
-        // Человек (LycantropyComponent)
         SubscribeLocalEvent<LycantropyComponent, ComponentStartup>(OnHumanStartup);
         SubscribeLocalEvent<LycantropyComponent, ComponentShutdown>(OnHumanShutdown);
         SubscribeLocalEvent<LycantropyComponent, WerewolfTransformAlertEvent>(OnHumanAlertClicked);
 
-        // Волк (WerewolfComponent)
         SubscribeLocalEvent<WerewolfComponent, ComponentStartup>(OnWolfStartup);
         SubscribeLocalEvent<WerewolfComponent, ComponentShutdown>(OnWolfShutdown);
         SubscribeLocalEvent<WerewolfComponent, WerewolfTransformAlertEvent>(OnWolfAlertClicked);
+
+        SubscribeLocalEvent<CalendarEventStartedEvent>(OnCalendarEventStarted);
+    }
+
+    private void OnCalendarEventStarted(CalendarEventStartedEvent args)
+    {
+        if (args.EventId != BloomEventId)
+            return;
+
+        var spawners = new List<EntityCoordinates>();
+
+        var spawnerQuery = EntityQueryEnumerator<LycantropyFlowerSpawnerComponent, TransformComponent>();
+        while (spawnerQuery.MoveNext(out _, out _, out var xform))
+        {
+            spawners.Add(xform.Coordinates);
+        }
+
+        var markerQuery = EntityQueryEnumerator<CalendarSpawnMarkerComponent, TransformComponent>();
+        while (markerQuery.MoveNext(out _, out var marker, out var xform))
+        {
+            if (string.Equals(marker.MarkerId, DungeonFlowerMarkerId, StringComparison.OrdinalIgnoreCase))
+                spawners.Add(xform.Coordinates);
+        }
+
+        if (spawners.Count == 0)
+            return;
+
+        var chosenCoords = _random.Pick(spawners);
+        Spawn(BloomFlowerProto, chosenCoords);
     }
 
     private void OnRoundStart(RoundStartedEvent args)
@@ -97,6 +128,8 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
 
     private void OnHumanStartup(EntityUid uid, LycantropyComponent component, ComponentStartup args)
     {
+        RemComp<LycantropyRevealSightComponent>(uid);
+
         if (_phaseEndTime <= _timing.CurTime)
             SyncInternalTimer(isStageChangeEvent: false);
 
@@ -123,6 +156,8 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
 
     private void OnWolfStartup(EntityUid uid, WerewolfComponent component, ComponentStartup args)
     {
+        RemComp<LycantropyRevealSightComponent>(uid);
+
         if (_phaseEndTime <= _timing.CurTime)
             SyncInternalTimer(isStageChangeEvent: false);
 
@@ -141,7 +176,6 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
 
         args.Handled = true;
 
-        // Мгновенное обращение обратно в человека по желанию (как ночью, так и во время рассвета на 10 стадии)
         _polymorph.Revert(uid);
         UpdateAllAlerts();
     }
@@ -187,7 +221,6 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
 
         if (_currentStage == NightEndStage)
         {
-            // Запускает таймер постепенного обращения в человека, но алерт у волка остается висеть!
             _lycantropy.OnNightEnded();
         }
 
@@ -195,9 +228,6 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
         UpdateAllAlerts();
     }
 
-    /// <summary>
-    /// Замена приватного _dayTime.ChangePreset через публичные поля DayTimeComponent и DayTimePrototype.
-    /// </summary>
     private void SetDayTimePreset(string groupId, string presetId)
     {
         if (!_proto.TryIndex<DayTimePrototype>(presetId, out var proto))
@@ -227,9 +257,6 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
         }
     }
 
-    /// <summary>
-    /// Синхронизирует внутренний таймер фазы (Дня или Ночи) с публичным DayTimeComponent и DayTimePrototype.
-    /// </summary>
     private void SyncInternalTimer(bool isStageChangeEvent)
     {
         DayTimeComponent? targetDayTime = null;
@@ -246,7 +273,6 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
         if (targetDayTime == null)
             return;
 
-        // Получаем список длительностей стадий (либо из заполненного StageColorTimeData, либо напрямую из DayTimePrototype)
         var stageDurations = GetStageDurations(targetDayTime);
         if (stageDurations.Count == 0)
             return;
@@ -254,9 +280,6 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
         _currentStage = Math.Clamp(targetDayTime.CurrentStage, 0, stageDurations.Count - 1);
         var curTime = _timing.CurTime;
 
-        // Сколько времени прошло внутри текущей стадии:
-        // При событии OnDayStageChanged стадия только началась (0 сек).
-        // При вызове посреди стадии — вычисляем остаток через targetDayTime.StageUpdateTime.
         var currentStageDuration = stageDurations[_currentStage];
         var elapsedInCurrentStage = TimeSpan.Zero;
 
@@ -272,13 +295,11 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
 
         if (_currentStage >= NightStartStage && _currentStage < NightEndStage)
         {
-            // Ночная фаза: от 5 до 10
             phaseStartStage = NightStartStage;
             phaseTargetStage = NightEndStage;
         }
         else
         {
-            // Дневная фаза: от 10 (через 0) до 5
             phaseStartStage = NightEndStage;
             phaseTargetStage = NightStartStage;
         }
@@ -356,12 +377,10 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
 
         if (IsNight)
         {
-            // Ночью у человека ночная иконка без кулдауна (можно кликнуть и обратиться)
             _alerts.ShowAlert(uid, AlertMoon, severity, cooldown: null);
         }
         else
         {
-            // Днем у человека дневная иконка и таймер до ночи
             _alerts.ShowAlert(uid, AlertMoon, severity, cooldown: (_phaseStartTime, _phaseEndTime));
         }
     }
@@ -372,13 +391,10 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
 
         if (IsNight)
         {
-            // Ночью у волка ночная иконка и таймер до рассвета (10 стадии)
             _alerts.ShowAlert(uid, AlertMoon, severity, cooldown: (_phaseStartTime, _phaseEndTime));
         }
         else
         {
-            // Наступил рассвет (10 стадия): волк постепенно превращается в человека,
-            // но алерт остается висеть в дневной стадии без кулдауна, чтобы игрок мог обратиться сразу по клику!
             _alerts.ShowAlert(uid, AlertMoon, severity, cooldown: null);
         }
     }

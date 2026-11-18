@@ -21,8 +21,20 @@ public sealed partial class CalendarEventPrototype : IPrototype
     [DataField("sound")]
     public SoundSpecifier? Sound { get; set; }
 
+    /// <summary>
+    /// Цвет фона карточки события на календарной доске.
+    /// </summary>
+    [DataField("backgroundColor")]
+    public Color? BackgroundColor { get; private set; }
+
     [DataField("tags")]
     public HashSet<string> Tags { get; private set; } = new();
+
+    /// <summary>
+    /// Теги режимов, при активности которых данное событие исключается из пула.
+    /// </summary>
+    [DataField("excludedTags")]
+    public HashSet<string> ExcludedTags { get; private set; } = new();
 
     /// <summary>
     /// Вес. Чем выше - тем больше шанс появления этого дня.

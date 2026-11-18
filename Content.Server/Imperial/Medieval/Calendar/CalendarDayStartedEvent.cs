@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Robust.Shared.Prototypes;
 
 namespace Content.Shared.Imperial.Medieval.Calendar;
@@ -13,6 +14,19 @@ public sealed class CalendarEventStartedEvent : EntityEventArgs
         DayNumber = dayNumber;
         EventId = eventId;
         Prototype = prototype;
+    }
+}
+
+/// <summary>
+/// Вызывается перед генерацией колод календаря. Позволяет системам режимов добавить активные теги пула.
+/// </summary>
+public sealed class CollectCalendarModeTagsEvent : EntityEventArgs
+{
+    public HashSet<string> Tags { get; }
+
+    public CollectCalendarModeTagsEvent(HashSet<string> tags)
+    {
+        Tags = tags;
     }
 }
 
