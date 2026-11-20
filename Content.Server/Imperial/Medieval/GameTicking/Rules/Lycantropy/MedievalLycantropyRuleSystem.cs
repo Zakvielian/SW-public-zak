@@ -33,7 +33,8 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
     [Dependency] private readonly IPrototypeManager _proto = default!;
     [Dependency] private readonly MobStateSystem _mobState = default!;
     [Dependency] private readonly AlertsSystem _alerts = default!;
-    [Dependency] private readonly IRobustRandom _random = default!;
+    [Dependency] private readonly LycantropyCrimsonTreeSystem _crimsonTree = default!;
+
 
     private static readonly ProtoId<AlertPrototype> AlertMoon = "MedievalWerewolfTransformation";
 
@@ -54,7 +55,7 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
     private TimeSpan _phaseStartTime = TimeSpan.Zero;
     private TimeSpan _phaseEndTime = TimeSpan.Zero;
 
-    private bool IsNight => IsBloodMoon || (_currentStage >= NightStartStage && _currentStage < NightEndStage);
+    public bool IsNight => IsBloodMoon || (_currentStage >= NightStartStage && _currentStage < NightEndStage);
 
     public override void Initialize()
     {
@@ -97,6 +98,7 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
     private void OnHumanStartup(EntityUid uid, LycantropyComponent component, ComponentStartup args)
     {
         RemComp<LycantropyRevealSightComponent>(uid);
+        _crimsonTree.SyncEntityAura(uid);
 
         if (_phaseEndTime <= _timing.CurTime)
             SyncInternalTimer(isStageChangeEvent: false);
@@ -111,7 +113,8 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
 
     private void OnHumanAlertClicked(EntityUid uid, LycantropyComponent component, WerewolfTransformAlertEvent args)
     {
-        if (args.Handled || !IsNight || !_mobState.IsAlive(uid))
+        var inTreeAura = HasComp<LycantropyCrimsonTreeAuraComponent>(uid);
+        if (args.Handled || (!IsNight && !inTreeAura) || !_mobState.IsAlive(uid))
             return;
 
         args.Handled = true;
@@ -125,6 +128,7 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
     private void OnWolfStartup(EntityUid uid, WerewolfComponent component, ComponentStartup args)
     {
         RemComp<LycantropyRevealSightComponent>(uid);
+        _crimsonTree.SyncEntityAura(uid);
 
         if (_phaseEndTime <= _timing.CurTime)
             SyncInternalTimer(isStageChangeEvent: false);
@@ -139,7 +143,8 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
 
     private void OnWolfAlertClicked(EntityUid uid, WerewolfComponent component, WerewolfTransformAlertEvent args)
     {
-        if (args.Handled || IsBloodMoon || IsNight || !_mobState.IsAlive(uid))
+        var inTreeAura = HasComp<LycantropyCrimsonTreeAuraComponent>(uid);
+        if (args.Handled || (!inTreeAura && (IsBloodMoon || IsNight)) || !_mobState.IsAlive(uid))
             return;
 
         args.Handled = true;
@@ -341,9 +346,10 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
 
     private void UpdateHumanAlert(EntityUid uid)
     {
-        var severity = IsNight ? AlertSeverityNight : AlertSeverityDay;
+        var canTransform = IsNight || HasComp<LycantropyCrimsonTreeAuraComponent>(uid);
+        var severity = canTransform ? AlertSeverityNight : AlertSeverityDay;
 
-        if (IsNight)
+        if (canTransform)
         {
             _alerts.ShowAlert(uid, AlertMoon, severity, cooldown: null);
         }
@@ -355,15 +361,16 @@ public sealed class MedievalLycantropyRuleSystem : GameRuleSystem<MedievalLycant
 
     private void UpdateWolfAlert(EntityUid uid)
     {
+        var canRevert = !IsNight || HasComp<LycantropyCrimsonTreeAuraComponent>(uid);
         var severity = IsNight ? AlertSeverityNight : AlertSeverityDay;
 
-        if (IsNight)
+        if (canRevert)
         {
-            _alerts.ShowAlert(uid, AlertMoon, severity, cooldown: (_phaseStartTime, _phaseEndTime));
+            _alerts.ShowAlert(uid, AlertMoon, severity, cooldown: null);
         }
         else
         {
-            _alerts.ShowAlert(uid, AlertMoon, severity, cooldown: null);
+            _alerts.ShowAlert(uid, AlertMoon, severity, cooldown: (_phaseStartTime, _phaseEndTime));
         }
     }
 

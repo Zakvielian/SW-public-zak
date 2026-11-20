@@ -1,0 +1,45 @@
+# Цветение
+- type: calendarEvent
+  id: CalendarEventLycantropyBloom
+  texture: "/Textures/Imperial/Medieval/Calendar/indicators/sun.png"
+  name: calendar-event-lycantropy-bloom-name
+  text: calendar-event-lycantropy-bloom-desc
+  backgroundColor: "#4a4550"
+  minOffset: 2
+  sound:
+    path: "/Audio/Effects/day.ogg"
+  weight: 10.0
+  minDay: 2
+  maxOccurrences: 4
+  spawns:
+    MedievalLycantropyBloomFlower:
+      - marker: LycantropyBloomFlower
+  tags:
+    - Day
+    - werewolves
+
+# Кровоточащее дерево
+- type: calendarEvent
+  id: CalendarEventLycantropyCrimsonTree
+  texture: "/Textures/Imperial/Medieval/Calendar/indicators/moon.png"
+  name: calendar-event-lycantropy-crimson-tree-name
+  text: calendar-event-lycantropy-crimson-tree-desc
+  backgroundColor: "#4a4550"
+  sound:
+    path: "/Audio/Imperial/Medieval/Werewolf/howl-far.ogg"
+  weight: 5.0
+  weightCurve:
+    points:
+      - 2, 5.0
+      - 3, 25.0
+      - 5, 25.0
+      - 6, 5.0
+  minDay: 2
+  maxOccurrences: 4
+  minOffset: 2
+  spawns:
+    MedievalLycantropyCrimsonTree:
+      - marker: LycantropyCrimsonTree
+  tags:
+    - Night
+    - werewolves

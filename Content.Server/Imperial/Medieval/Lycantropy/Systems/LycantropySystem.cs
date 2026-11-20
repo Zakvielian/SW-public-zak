@@ -56,6 +56,7 @@ public sealed partial class LycantropySystem : SharedLycantropySystem
     [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly IPrototypeManager _proto = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
+    [Dependency] private readonly MedievalLycantropyRuleSystem _rule = default!;
 
     private const int PointsPerNight = 0;
     private const int PointsPerInfect = 4;
@@ -125,6 +126,9 @@ public sealed partial class LycantropySystem : SharedLycantropySystem
         var ents = EntityManager.AllEntities<WerewolfComponent>();
         foreach (var item in ents)
         {
+            if (HasComp<LycantropyCrimsonTreeAuraComponent>(item.Owner))
+                continue;
+
             item.Comp.RevertTime = _timing.CurTime + TimeSpan.FromSeconds(30);
             item.Comp.NextRevertPopup = _timing.CurTime;
             _jitter.DoJitter(item.Owner, TimeSpan.FromSeconds(30), true);
@@ -134,12 +138,20 @@ public sealed partial class LycantropySystem : SharedLycantropySystem
     public void Morph(EntityUid uid, LycantropyComponent comp)
     {
         var abilities = comp.Abilities;
+        var requiresTreeAura = !_rule.IsNight && HasComp<LycantropyCrimsonTreeAuraComponent>(uid);
+
         _audio.PlayGlobal(new SoundCollectionSpecifier("WerewolfTransform"), uid);
         _stun.TryAddParalyzeDuration(uid, TimeSpan.FromSeconds(3));
         _jitter.DoJitter(uid, TimeSpan.FromSeconds(3), true);
 
         Timer.Spawn(TimeSpan.FromSeconds(3), () =>
         {
+            if (TerminatingOrDeleted(uid) || !_mobState.IsAlive(uid))
+                return;
+
+            if (requiresTreeAura && !_rule.IsNight && !HasComp<LycantropyCrimsonTreeAuraComponent>(uid))
+                return;
+
             var mob = _polymorph.PolymorphEntity(uid, comp.SelectedForm ?? comp.AllowedPolymorphs.First().Value);
 
             if (!mob.HasValue)
@@ -254,6 +266,13 @@ public sealed partial class LycantropySystem : SharedLycantropySystem
             {
                 if (item.Value <= _timing.CurTime)
                     comp.Critted.Remove(item.Key);
+            }
+
+            if (HasComp<LycantropyCrimsonTreeAuraComponent>(uid))
+            {
+                comp.RevertTime = null;
+                comp.NextRevertPopup = null;
+                continue;
             }
 
             if (comp.RevertTime.HasValue && comp.RevertTime <= _timing.CurTime)

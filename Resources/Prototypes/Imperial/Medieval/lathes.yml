@@ -1189,6 +1189,7 @@
     - ForgedRHandCannon4Craft
     - ForgedLHandCannon5Craft
     - ForgedRHandCannon5Craft
+    - MedievalLycantropyCompassRecipe
 
 - type: entity
   parent: CP14BaseWorkbench

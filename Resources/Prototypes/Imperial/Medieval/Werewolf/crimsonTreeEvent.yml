@@ -1,0 +1,180 @@
+- type: entity
+  id: MedievalLycantropyCrimsonTree
+  parent: MedievalBaseTreeAutumn
+  name: ent-MedievalLycantropyCrimsonTree
+  description: ent-MedievalLycantropyCrimsonTree.desc
+  components:
+  - type: Sprite
+    sprite: Imperial/Other/HallowenContentTrees/HalloweenTreesLarge.rsi
+    state: HorrorTreeLarge
+    offset: 0,0.5
+    drawdepth: Mobs
+  - type: PointLight
+    color: "#d92626"
+    radius: 4.5
+    energy: 1.5
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape:
+          !type:PhysShapeCircle
+          radius: 0.25
+        density: 1000
+        layer:
+        - WallLayer
+      aura:
+        shape:
+          !type:PhysShapeCircle
+          radius: 15
+        hard: false
+        mask:
+        - MobLayer
+  - type: Destructible
+    thresholds:
+    - trigger:
+        !type:DamageTrigger
+        damage: 400
+      behaviors:
+      - !type:DoActsBehavior
+        acts: [ "Destruction" ]
+    - trigger:
+        !type:DamageTrigger
+        damage: 250
+      behaviors:
+      - !type:PlaySoundBehavior
+        sound:
+          path: /Audio/Effects/tree_fell.ogg
+          params:
+            volume: 5
+            variation: 0.05
+      - !type:DoActsBehavior
+        acts: [ "Destruction" ]
+      - !type:SpawnEntitiesBehavior
+        spawn:
+          Log:
+            min: 2
+            max: 8
+          MedievalLycantropyCrimsonTreeHeart:
+            min: 1
+            max: 1
+  - type: LycantropyCrimsonTree
+    lifeTime: 15
+    radius: 15
+    pointsPerSecond: 0.125
+    witheredPrototype: MedievalLycantropyWitheredCrimsonTree
+
+- type: entity
+  id: MedievalLycantropyWitheredCrimsonTree
+  parent: MedievalBaseTreeAutumn
+  name: ent-MedievalLycantropyWitheredCrimsonTree
+  description: ent-MedievalLycantropyWitheredCrimsonTree.desc
+  components:
+  - type: Sprite
+    sprite: Imperial/Other/HallowenContentTrees/HalloweenTreesLarge.rsi
+    state: HorrorTreeLarge
+    offset: 0,0.5
+    drawdepth: Mobs
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape:
+          !type:PhysShapeCircle
+          radius: 0.25
+        density: 1000
+        layer:
+        - WallLayer
+  - type: Destructible
+    thresholds:
+    - trigger:
+        !type:DamageTrigger
+        damage: 150
+      behaviors:
+      - !type:DoActsBehavior
+        acts: [ "Destruction" ]
+    - trigger:
+        !type:DamageTrigger
+        damage: 60
+      behaviors:
+      - !type:PlaySoundBehavior
+        sound:
+          path: /Audio/Effects/tree_fell.ogg
+          params:
+            volume: 5
+            variation: 0.05
+      - !type:DoActsBehavior
+        acts: [ "Destruction" ]
+      - !type:SpawnEntitiesBehavior
+        spawn:
+          Log:
+            min: 2
+            max: 8
+
+
+- type: entity
+  id: MedievalLycantropyCrimsonTreeHeart
+  parent: BaseItem
+  name: ent-MedievalLycantropyCrimsonTreeHeart
+  description: ent-MedievalLycantropyCrimsonTreeHeart.desc
+  components:
+  - type: Sprite
+    sprite: Imperial/Medieval/Chem/Garden/black.rsi # Заглушка из bloomEvent.yml
+    state: produce
+    color: "#b51717"
+  - type: Item
+    size: Small
+
+- type: entity
+  id: MedievalLycantropyCompass
+  parent: BaseItem
+  name: ent-MedievalLycantropyCompass
+  description: ent-MedievalLycantropyCompass.desc
+  components:
+  - type: Transform
+    noRot: true
+  - type: Sprite
+    noRot: true
+    sprite: Imperial/Medieval/Ships/Compass/medieval_compass.rsi
+    scale: 0.6, 0.6
+    layers:
+    - state: compass-n
+      map: ["enum.MedievalCompassLayers.Base"]
+      color: "#ff6b6b"
+  - type: Icon
+    sprite: Imperial/Medieval/Ships/Compass/medieval_compass.rsi
+    state: compass-n
+  - type: Item
+    sprite: Objects/Devices/pinpointer.rsi
+    inhandVisuals:
+      left:
+      - state: inhand-left-base
+        color: "#606060"
+      - state: inhand-left-stripe
+        color: "#b51717"
+      - state: inhand-left-top
+      right:
+      - state: inhand-right-base
+        color: "#606060"
+      - state: inhand-right-stripe
+        color: "#b51717"
+      - state: inhand-right-top
+  - type: LycantropyCompass
+    duration: 180
+    updateInterval: 1
+
+- type: entity
+  id: LycantropyCrimsonTreeSpawnMarker
+  parent: SimpleMarker
+  name: ent-LycantropyCrimsonTreeSpawnMarker
+  components:
+  - type: CalendarSpawnMarker
+    markerId: LycantropyCrimsonTree
+
+- type: CP14Recipe
+  id: MedievalLycantropyCompassRecipe
+  craftTime: 5
+  iconOverride: MedievalLycantropyCompass
+  entities:
+    MedievalCompass: 1
+    MedievalLycantropyCrimsonTreeHeart: 1
+  result: MedievalLycantropyCompass
+

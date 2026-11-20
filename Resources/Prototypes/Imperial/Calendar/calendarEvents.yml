@@ -96,25 +96,6 @@
     - Day
     - Omen
 
-# Цветение (выпадает только в режиме оборотней)
-- type: calendarEvent
-  id: CalendarEventLycantropyBloom
-  texture: "/Textures/Imperial/Medieval/Calendar/indicators/sun.png"
-  name: calendar-event-lycantropy-bloom-name
-  text: calendar-event-lycantropy-bloom-desc
-  backgroundColor: "#4a4550"
-  minOffset: 2
-  sound:
-    path: "/Audio/Effects/day.ogg"
-  weight: 10.0
-  minDay: 2
-  maxOccurrences: 4
-  spawns:
-    MedievalLycantropyBloomFlower:
-      - marker: LycantropyBloomFlower
-  tags:
-    - Day
-    - werewolves
 
 # ==============================================================================
 # НОЧНЫЕ СОБЫТИЯ (Тег: Night)
